@@ -32,3 +32,22 @@
 .journalpanelhead h2{font-size:18px;margin:0}
 .journalpanelhead small{display:block;font-size:12px;color:#899a9f;margin-top:5px}
 .journaladd{display:inline-flex;align-items:center;gap:5px;border:1px solid #d4e8e0;border-radius:8px;padding:9px 12px;background:#edf8f3;color:#177a6b;font-weight:700;font-size:12px}
+
+.mealstablehead,.mealrow,.mealtotal{display:grid;grid-template-columns:minmax(0,1fr) 66px 66px 58px;gap:8px;align-items:center}
+.mealstablehead{color:#8c9b9e;font-size:11px;padding:10px 0;border-bottom:1px solid #e8eeee}
+.mealrow{padding:15px 0;border-bottom:1px solid #edf1f0}
+.mealrow strong{font-size:14px}
+.mealrow small{display:block;color:#8b9b9e;font-size:12px;margin-top:5px}
+.mealrow b,.mealtotal b{font-size:13px}
+.mealbuttons{display:flex;gap:3px}
+.mealbuttons button,.journalactivity button{border:0;background:none;color:#8d9da0;padding:4px}
+.mealtotal{padding-top:16px}
+.journalempty,.journalsub{color:#8a999e;font-size:13px;line-height:1.5}
+.journalcheck{border-top:1px solid #e8eeee;margin-top:17px;padding-top:15px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12px;color:#829398}
+.journalcheck button{border:1px solid #d9e9e2;background:white;color:#18796a;padding:9px 12px;border-radius:7px}
+.journalactivity{display:flex;align-items:center;gap:13px;padding:12px 0}
+.journalactivity>svg{color:#188776}
+.journalactivity>div{flex:1}
+.journalactivity small{display:block;color:#8b999e;font-size:12px;margin-top:5px}
+.journalform{border-top:1px solid #e8eeee;padding-top:12px}
+.journalform label{margin:10px 0}
