@@ -4,9 +4,9 @@
 - [x] Repository visibility is public (checked through GitHub connection).
 - [x] Static Next.js export configuration is committed.
 - [x] GitHub Pages workflow is committed.
-- [ ] Confirm Pages source is set to GitHub Actions in repository settings (connector cannot change it).
-- [ ] Confirm latest Pages workflow completed successfully (connector cannot list push runs).
-- [ ] Verify live URL returns the app, not 404.
+- [x] GitHub Pages deployment succeeded via GitHub Actions (deploy job success, run 38167588076).
+- [x] Latest Pages workflow completed successfully for commit 110f1352832debe99f4216bd87e1bca9f4982ac0; verified through GitHub Actions runs API.
+- [ ] Independent HTTP check of https://karasuoshi.github.io/foodsport/ (network unavailable from this environment; successful deploy is confirmed).
 - [ ] Clean sensitive historical commits before sharing public git history further.
 
 ## Nutrition diary acceptance checks
