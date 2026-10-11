@@ -51,3 +51,21 @@
 .journalactivity small{display:block;color:#8b999e;font-size:12px;margin-top:5px}
 .journalform{border-top:1px solid #e8eeee;padding-top:12px}
 .journalform label{margin:10px 0}
+
+.journalweek{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.journalday{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;border:1px solid #e7eeee;border-radius:9px;background:white;padding:11px 3px}
+.journalday.selected{border-color:#208a7a;background:#eff9f5}
+.journalday strong,.journalday small{font-size:10px;color:#758f8c;text-align:center;overflow-wrap:anywhere}
+.journalday span{font-size:19px;font-weight:700}
+.journalweight{font-size:40px;font-weight:800}
+.journalweight span{font-size:14px;font-weight:400;color:#849599}
+.journaldelta{font-size:13px;font-weight:700;color:#198578}
+.journalweightform{display:flex;gap:8px;margin:16px 0 10px}
+.journalweightform input{min-width:0}
+.journalweightform button{background:#198879;border:0;border-radius:8px;color:white;padding:0 12px;font-size:12px}
+.journalcount{color:#198879;background:#eff8f5;padding:5px 9px;border-radius:7px;font-size:12px}
+.journalmissing{display:flex;justify-content:space-between;width:100%;padding:13px 0;border:0;border-bottom:1px solid #edf1f0;background:white;text-align:left;font-size:13px}
+.journalmissing strong{color:#198879}
+.journalfooter{text-align:center;margin:28px 0;color:#9ba8ac;font-size:11px}
+@media(max-width:900px){.journalgrid{grid-template-columns:1fr}.journalside{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:650px){.journalheader{padding:18px}.journalmain{padding:20px 12px}.journalheading{flex-direction:column;align-items:stretch}.journalmetrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.journalmetrics>div,.journalpanel{padding:15px}.journalmetrics strong{font-size:23px}.journalside{grid-template-columns:1fr}.mealstablehead,.mealrow,.mealtotal{grid-template-columns:minmax(0,1fr) 48px 48px 44px;gap:4px}.mealbuttons button{padding:2px}.journalweek{gap:3px}.journalday{padding:9px 1px}.journalcheck{align-items:flex-start;flex-direction:column}}
