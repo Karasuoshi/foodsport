@@ -16,6 +16,6 @@ export default function WorkoutPlanner({date,onDateChange}:{date:string;onDateCh
  <div className="workoutdetail"><div><strong>{planned?.name||"День отдыха"}</strong><p>{planned?planned.description:"На сегодня тренировка не запланирована."}</p>{planned&&<small>Ориентир: {planned.duration} минут</small>}</div></div>
  {planned&&<><button className="workoutopen" onClick={()=>setExpanded(v=>!v)}>{expanded?"Свернуть программу":"Посмотреть упражнения"} {expanded?<ChevronUp size={16}/>:<ChevronDown size={16}/>}</button>
  {expanded&&<div className="workoutsteps">{planned.exercises.map((e,i)=><div className="workoutstep" key={i}><div className="workoutstepheading"><strong>{i+1}. {e.name}</strong><small>{e.sets} × {e.reps}</small></div>{e.hint&&<p className="journalsub">{e.hint}</p>}</div>)}</div>}</>}
- <p className="workoutnote">Ничего вводить не нужно. Изменения расписания обсуждаем в чате.</p>
+ 
  </section>
 }
