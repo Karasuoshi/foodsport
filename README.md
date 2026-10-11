@@ -12,8 +12,8 @@ Private-first AI fitness, nutrition and health platform. Russian-first interface
 - Sleep tracking optional; missing wearable sleep data never counts as poor recovery.
 - Notifications postponed to v2.
 
-## Initial owner profile (illustrative, not production data)
-Age 43, height 172 cm; last reported control weight 103.8 kg; target 90 kg; milestone 99.9 kg. Working nutrition goals 1900–2200 kcal and 120–150 g protein/day. These values must be user-editable, not hardcoded or assumed for others.
+## User data
+Personal metrics, goals, health records and Polar credentials must be stored outside Git history. Configure user-specific targets inside the application after secure authentication is implemented.
 
 ## Architecture
 Next.js web application; TypeScript API; PostgreSQL with per-user access controls; Polar AccessLink OAuth; OpenAPI and MCP integration; provider-neutral agent instructions in AGENTS.md and skills/foodsport-coach/SKILL.md.
