@@ -69,3 +69,36 @@
 .journalfooter{text-align:center;margin:28px 0;color:#9ba8ac;font-size:11px}
 @media(max-width:900px){.journalgrid{grid-template-columns:1fr}.journalside{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:650px){.journalheader{padding:18px}.journalmain{padding:20px 12px}.journalheading{flex-direction:column;align-items:stretch}.journalmetrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.journalmetrics>div,.journalpanel{padding:15px}.journalmetrics strong{font-size:23px}.journalside{grid-template-columns:1fr}.mealstablehead,.mealrow,.mealtotal{grid-template-columns:minmax(0,1fr) 48px 48px 44px;gap:4px}.mealbuttons button{padding:2px}.journalweek{gap:3px}.journalday{padding:9px 1px}.journalcheck{align-items:flex-start;flex-direction:column}}
+
+.workoutweek{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.workoutday{display:flex;flex-direction:column;align-items:center;gap:6px;border:1px solid #e4ebea;border-radius:9px;background:#fff;padding:10px 2px;min-width:0;min-height:88px}
+.workoutday.active{background:#edf8f4;border-color:#168b7a}
+.workoutday span,.workoutday small{font-size:10px;color:#829397}
+.workoutday b{font-size:18px}
+.workoutday small{overflow-wrap:anywhere;text-align:center}
+.workoutday svg{color:#168b7a}
+.workoutdetail{display:flex;align-items:start;justify-content:space-between;gap:12px;padding:20px 0 12px}
+.workoutdetail strong{font-size:17px}
+.workoutdetail p,.workoutnote,.workouteditor p{color:#829397;font-size:12px;line-height:1.5}
+.workoutdetail small{color:#168b7a;font-size:12px}
+.workoutedit,.workoutopen{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid #d9e9e3;background:#eff8f4;color:#167b6d;border-radius:8px;padding:10px;font-size:12px;white-space:nowrap}
+.workoutopen{width:100%;font-weight:700}
+.workouteditor{padding:14px;border:1px solid #e1e9e7;border-radius:10px;background:#f8fbfa;display:grid;gap:12px}
+.workouteditor label{display:grid;gap:7px;font-size:12px}
+.workouteditor select{width:100%;padding:9px;border:1px solid #dce7e4;border-radius:7px;background:white}
+.workouteditactions{display:flex;gap:10px;align-items:center}
+.workouteditactions>button:last-child{border:0;background:none;color:#849498}
+.workoutsteps{padding-top:10px}
+.workoutstep{padding:14px 0;border-bottom:1px solid #e8eeee}
+.workoutstepheading{display:flex;justify-content:space-between;gap:12px}
+.workoutstepheading strong{font-size:13px}
+.workoutstepheading small{color:#87999a;font-size:12px}
+.workoutsets{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.workoutset{display:flex;align-items:center;gap:5px}
+.workoutset button{width:32px;height:32px;border-radius:7px;border:1px solid #d8e4e0;background:#fff;color:#718c86}
+.workoutset button.done{background:#168b7a;color:white;border-color:#168b7a}
+.workoutset input{width:64px;padding:7px;border:1px solid #dbe7e4;border-radius:7px;font-size:12px}
+.workoutfinish{width:100%;margin-top:16px;background:#168b7a;color:white;border:0;border-radius:9px;padding:13px;font-weight:700}
+.workoutfinish.finished{background:#e6f5ee;color:#167b6d}
+.workoutnote{margin:15px 0 0}
+@media(max-width:650px){.workoutweek{gap:3px}.workoutday{padding:9px 1px}.workoutday small{font-size:9px}.workoutdetail{flex-wrap:wrap}.workoutstepheading{flex-wrap:wrap}}
