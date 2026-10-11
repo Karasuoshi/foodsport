@@ -11,7 +11,7 @@ export default function WorkoutPlanner({date,onDateChange}:{date:string;onDateCh
  const planned=workoutForDate(date,schedule);
  const monday=shift(date,-((new Date(date+"T12:00:00").getDay()+6)%7));
  return <section className="journalpanel workoutplanner">
- <div className="journalpanelhead"><div><h2>План тренировок</h2><small>Выбери день и смотри программу</small></div><CalendarDays size={20}/></div>
+ <div className="journalpanelhead"><div><h2>План тренировок</h2></div><CalendarDays size={20}/></div>
  <div className="workoutweek">{Array.from({length:7},(_,i)=>{const d=shift(monday,i),w=workoutForDate(d,schedule);return <button key={d} className={"workoutday"+(d===date?" active":"")} onClick={()=>{onDateChange(d);setExpanded(false)}}><span>{weekdays[i]}</span><b>{Number(d.slice(-2))}</b><small>{w?(w.kind==="strength"?"Силовая":w.kind==="swim"?"Бассейн":w.kind==="cycle"?"Сайкл":"Кардио"):"Отдых"}</small></button>})}</div>
  <div className="workoutdetail"><div><strong>{planned?.name||"День отдыха"}</strong><p>{planned?planned.description:"На сегодня тренировка не запланирована."}</p>{planned&&<small>Ориентир: {planned.duration} минут</small>}</div></div>
  {planned&&<><button className="workoutopen" onClick={()=>setExpanded(v=>!v)}>{expanded?"Свернуть программу":"Посмотреть упражнения"} {expanded?<ChevronUp size={16}/>:<ChevronDown size={16}/>}</button>
