@@ -27,6 +27,13 @@ const october13Food:FoodEntry[]=[
 {id:"chat-2026-10-13-pie",date:"2026-10-13",name:"Домашний пирожок с яблочным вареньем",grams:100,kcal100:290,protein100:5,fat100:8,carbs100:49},
 {id:"chat-2026-10-13-syrniki",date:"2026-10-13",name:"Сырники, 2 шт.",grams:1,kcal100:224,protein100:12,fat100:14.4,carbs100:31.65}
 ];
+const october13Food:FoodEntry[]=[
+{id:"chat-2026-10-13-bread",date:"2026-10-13",name:"Домашний хлеб, 2 кусочка по 20 г",grams:40,kcal100:250,protein100:7.5,fat100:2.5,carbs100:50},
+{id:"chat-2026-10-13-sausage",date:"2026-10-13",name:"Колбаса",grams:15,kcal100:300,protein100:13.33,fat100:26.67,carbs100:1.33},
+{id:"chat-2026-10-13-cheese",date:"2026-10-13",name:"Сыр",grams:20,kcal100:350,protein100:25,fat100:27.5,carbs100:0},
+{id:"chat-2026-10-13-apple-pie",date:"2026-10-13",name:"Домашний пирожок с яблочным вареньем",grams:100,kcal100:290,protein100:5,fat100:8,carbs100:49.5},
+{id:"chat-2026-10-13-syrniki",date:"2026-10-13",name:"Сырники, 2 шт. (224 ккал, 12 г белка)",grams:1,kcal100:224,protein100:12,fat100:7.5,carbs100:6.3}
+];
 const october12Food:FoodEntry[]=[
 {id:"chat-2026-10-12-breakfast",date:"2026-10-12",name:"Завтрак: творог 5%, бутерброды с куриным карпаччо, сыром и авокадо, хлеб с маслом",grams:1,kcal100:685,protein100:57,fat100:37,carbs100:33},
 {id:"chat-2026-10-12-soup",date:"2026-10-12",name:"Обед: домашние щи с рёбрами и курицей (~500 г)",grams:500,kcal100:70,protein100:5.4,fat100:4,carbs100:3},
