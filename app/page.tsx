@@ -34,6 +34,13 @@ const october12Food:FoodEntry[]=[
 {id:"chat-2026-10-12-dinner",date:"2026-10-12",name:"Ужин: курица с ананасами в соусе и рис",grams:1,kcal100:500,protein100:33,fat100:16,carbs100:66},
 {id:"chat-2026-10-12-night",date:"2026-10-12",name:"Ночной перекус: молоко ~300 мл и 1 ч. л. мёда",grams:1,kcal100:178,protein100:9,fat100:8,carbs100:18}
 ];
+const october13Food:FoodEntry[]=[
+{id:"chat-2026-10-13-bread",date:"2026-10-13",name:"Домашний хлеб, 2 кусочка по 20 г",grams:40,kcal100:250,protein100:7.5,fat100:2.5,carbs100:49},
+{id:"chat-2026-10-13-sausage",date:"2026-10-13",name:"Колбаса",grams:15,kcal100:300,protein100:13.333,fat100:26.667,carbs100:1},
+{id:"chat-2026-10-13-cheese",date:"2026-10-13",name:"Сыр",grams:20,kcal100:350,protein100:25,fat100:27.5,carbs100:1},
+{id:"chat-2026-10-13-pie",date:"2026-10-13",name:"Пирожок с яблочным вареньем (оценка, печёный)",grams:100,kcal100:290,protein100:5,fat100:8,carbs100:49},
+{id:"chat-2026-10-13-syrniki",date:"2026-10-13",name:"Сырники, 2 шт. (224 ккал, 12 г белка по данным)",grams:1,kcal100:224,protein100:12,fat100:8.5,carbs100:25}
+];
 const october12Training:Training={id:"chat-2026-10-12-strength-a",date:"2026-10-12",type:"Силовая А — выполнена",minutes:75,notes:"15 мин степпер, 3 круга по 12 повторений: гоблет 17,5 кг; жим лёжа 50 кг; верхний блок 42,5 кг; румынская тяга 2×17,5 кг. Планка 3×1 мин, жук 3×20 на сторону. В конце 15 мин дорожка."};
 const empty={name:"",grams:"",kcal100:"",protein100:"",fat100:"",carbs100:""};
 const tabs:{id:Tab;label:string;icon:any}[]=[{id:"overview",label:"Обзор",icon:BarChart3},{id:"food",label:"Питание",icon:UtensilsCrossed},{id:"weight",label:"Вес",icon:Scale},{id:"training",label:"Тренировки",icon:Dumbbell},{id:"plan",label:"План недели",icon:CalendarDays},{id:"health",label:"Здоровье",icon:HeartPulse}];
