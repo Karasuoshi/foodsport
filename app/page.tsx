@@ -32,7 +32,10 @@ const october13Food:FoodEntry[]=[
 {id:"chat-2026-10-13-sausage",date:"2026-10-13",name:"Колбаса",grams:15,kcal100:300,protein100:13.33,fat100:26.67,carbs100:1.33},
 {id:"chat-2026-10-13-cheese",date:"2026-10-13",name:"Сыр",grams:20,kcal100:350,protein100:25,fat100:27.5,carbs100:0},
 {id:"chat-2026-10-13-apple-pie",date:"2026-10-13",name:"Домашний пирожок с яблочным вареньем",grams:100,kcal100:290,protein100:5,fat100:8,carbs100:49.5},
-{id:"chat-2026-10-13-syrniki",date:"2026-10-13",name:"Сырники, 2 шт. (224 ккал, 12 г белка)",grams:100,kcal100:224,protein100:12,fat100:7.5,carbs100:6.3}
+{id:"chat-2026-10-13-syrniki",date:"2026-10-13",name:"Сырники, 2 шт. (224 ккал, 12 г белка)",grams:100,kcal100:224,protein100:12,fat100:7.5,carbs100:6.3},
+{id:"chat-2026-10-13-soup",date:"2026-10-13",name:"Домашние щи с мясом, полтарелки (~250 г)",grams:250,kcal100:70,protein100:5.4,fat100:4,carbs100:3},
+{id:"chat-2026-10-13-potato",date:"2026-10-13",name:"Запечённый картофель с яйцом и сыром (~250 г)",grams:250,kcal100:150,protein100:10,fat100:10,carbs100:13},
+{id:"chat-2026-10-13-chocolate",date:"2026-10-13",name:"Шоколад Алёнка, 4 маленькие дольки (~20 г)",grams:20,kcal100:550,protein100:7,fat100:34,carbs100:53}
 ];
 const october12Training:Training={id:"chat-2026-10-12-strength-a",date:"2026-10-12",type:"Силовая А — выполнена",minutes:75,notes:"15 мин степпер, 3 круга по 12 повторений: гоблет 17,5 кг; жим лёжа 50 кг; верхний блок 42,5 кг; румынская тяга 2×17,5 кг. Планка 3×1 мин, жук 3×20 на сторону. В конце 15 мин дорожка."};
 const empty={name:"",grams:"",kcal100:"",protein100:"",fat100:"",carbs100:""};
