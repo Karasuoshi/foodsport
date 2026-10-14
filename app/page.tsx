@@ -41,7 +41,8 @@ const october13Food:FoodEntry[]=[
 {id:"chat-2026-10-13-potato-extra",date:"2026-10-13",name:"Запечённый картофель с яйцом и сыром, дополнительная порция",grams:100,kcal100:150,protein100:10,fat100:10,carbs100:13}
 ];
 const october14Food:FoodEntry[]=[
-{id:"chat-2026-10-14-roti-cheese",date:"2026-10-14",name:"Лепёшка роти с сыром (~100 г, оценка)",grams:100,kcal100:330,protein100:11,fat100:16,carbs100:35}
+{id:"chat-2026-10-14-roti-cheese",date:"2026-10-14",name:"Лепёшка роти с сыром (~100 г, оценка)",grams:100,kcal100:330,protein100:11,fat100:16,carbs100:35},
+{id:"chat-2026-10-14-cottage",date:"2026-10-14",name:"Творог 5%",grams:200,kcal100:121,protein100:17,fat100:5,carbs100:2}
 ];
 const october12Training:Training={id:"chat-2026-10-12-strength-a",date:"2026-10-12",type:"Силовая А — выполнена",minutes:75,notes:"15 мин степпер, 3 круга по 12 повторений: гоблет 17,5 кг; жим лёжа 50 кг; верхний блок 42,5 кг; румынская тяга 2×17,5 кг. Планка 3×1 мин, жук 3×20 на сторону. В конце 15 мин дорожка."};
 const empty={name:"",grams:"",kcal100:"",protein100:"",fat100:"",carbs100:""};
