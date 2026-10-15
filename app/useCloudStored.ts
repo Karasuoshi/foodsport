@@ -1,12 +1,12 @@
 "use client";
 import {Dispatch,SetStateAction,useCallback,useEffect,useRef,useState} from "react";
 import {cloudRequest,getSession} from "./CloudAccount";
-type Item={id?:string;date?:string;updatedAt?:string;[key:string]:unknown};
+type Item={id?:string;date?:string;updatedAt?:string};
 const tables:Record<string,string>={"fs-food-v1":"food_entries","fs-weights-v1":"weights","fs-training-v1":"trainings","fs-day-reviews-v1":"day_reviews","fs-plan-2026-10-12-v1":"plan_items"};
 const fields:Record<string,string[]>={food_entries:["id","date","name","grams","kcal100","protein100","fat100","carbs100"],weights:["id","date","value"],trainings:["id","date","type","minutes","notes"],day_reviews:["date","status","updatedAt"],plan_items:["id","date","title","done"]};
 const idOf=(x:Item)=>String(x.id??x.date);
-const toDb=(x:Item,table:string,user_id:string)=>{const out:Record<string,unknown>={user_id};for(const f of fields[table]){if(x[f]!==undefined)out[f==="updatedAt"?"updated_at":f]=x[f]}return out};
-const fromDb=(x:Record<string,unknown>,table:string)=>{const out:Item={};for(const f of fields[table]){const v=x[f==="updatedAt"?"updated_at":f];if(v!==undefined)out[f]=v}return out};
+const toDb=(x:Item,table:string,user_id:string)=>{const out:Record<string,unknown>={user_id};for(const f of fields[table]){if((x as Record<string,unknown>)[f]!==undefined)out[f==="updatedAt"?"updated_at":f]=(x as Record<string,unknown>)[f]}return out};
+const fromDb=(x:Record<string,unknown>,table:string)=>{const out:Item={};for(const f of fields[table]){const v=x[f==="updatedAt"?"updated_at":f];if(v!==undefined)(out as Record<string,unknown>)[f]=v}return out};
 export default function useCloudStored<T extends Item>(key:string,initial:T[]):[T[],Dispatch<SetStateAction<T[]>>]{
  const [state,setState]=useState<T[]>(initial);const current=useRef(state);current.current=state;
  const [ready,setReady]=useState(false);const token=useRef<string|null>(null);const userId=useRef<string|null>(null);
