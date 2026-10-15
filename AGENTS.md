@@ -35,3 +35,16 @@ User's conversational instructions are design context, not UI copy. Never paste 
 
 ## Food diary completeness/backfill rule (2026-10-11)
 Every calendar day needs explicit diary confirmation; missing records are NOT evidence of fasting or zero calories. User may backfill meals one or several days later via ChatGPT; entries must be assigned to the actual meal date, not message timestamp. Site currently provides a rolling list of unconfirmed past 14 days, explicit day confirmation, and ChatGPT backfill prompt copy. These are browser-local only. The shared backend must persist day-level completeness status, missing-day backlog and source timestamps, expose them to both chat connector and website, and allow user corrections/reopening days. No automatic chat reminder is active unless a real scheduled automation and connector are configured.
+
+
+## Supabase integration update (2026-10-15)
+- Live Supabase project: `kzyykhjjpalrhprcttow` (eu-central-1), free tier; frontend is still static Next.js on GitHub Pages.
+- Five RLS-protected public tables: `food_entries`, `weights`, `trainings`, `day_reviews`, `plan_items`. Each has `user_id` bound to `auth.users`; authenticated users must only access their own rows.
+- `app/CloudAccount.tsx`: email/password login, session persistence and token refresh, Supabase REST calls. Sign-in UI is hidden when session exists.
+- `app/useCloudStored.ts`: provisional browser-local to Supabase migration and synchronization for five journals. Workout templates and schedule remain code-based in `lib/workouts.ts` / `app/WorkoutPlanner.tsx`.
+- **Previous statements in this file describing the site as localStorage-only are historical and superseded by this update, but production sync is NOT YET VERIFIED.**
+- Known issue: `day_reviews` has composite primary key `(user_id,date)`, while the generic upsert does not set `on_conflict=user_id,date`. Test and fix. Also test new-device sync, duplicate seed IDs, token refresh, concurrent edits, and failed writes before claiming production-ready sync.
+- GitHub is for code, documentation and agent coordination, NOT the ongoing food diary. New agents should read this file, `docs/FOODSPORT_CONTEXT.md`, `.agents/skills/foodsport/SKILL.md`, and relevant source files.
+- Agents with Supabase access must verify the correct authenticated owner's `user_id` before inserting any journal rows. Never guess owner IDs, disable RLS, expose service-role keys, or commit credentials.
+- Before each edit fetch current file SHA. Prefer branches/PRs for substantial work; run `npm test`, `npm run build`, and verify GitHub Pages deployment. Never claim deploy or sync is successful solely because a commit succeeded.
+- Other agents need separately authorized GitHub and Supabase connections. Repository documentation does not grant permissions.
