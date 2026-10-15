@@ -4,6 +4,7 @@ import {Activity,BarChart3,BookOpen,CalendarDays,ChevronLeft,ChevronRight,Dumbbe
 import {FoodEntry,macros,total,round,today,validFood} from "../lib/food";
 import {buildExport,downloadJSON} from "../lib/export";
 import WorkoutPlanner from "./WorkoutPlanner";
+import CloudAccount from "./CloudAccount";
 type Tab="overview"|"food"|"weight"|"training"|"health"|"plan";
 type Weight={id:string;date:string;value:number};
 type Training={id:string;date:string;type:string;minutes:number;notes:string};
@@ -78,7 +79,7 @@ export default function Home(){
  const progress=(value:number,target:number)=>Math.min(100,Math.max(0,value/target*100));
  return <div className="journalapp">
  <header className="journalheader"><div className="journalbrand"><Activity size={23}/><strong>FoodSport</strong><span>Дневник</span></div><button className="journalexport" onClick={()=>downloadJSON("foodsport-export.json",buildExport(entries,weights,trainings))}>Экспорт данных</button></header>
- <main className="journalmain">
+ <main className="journalmain"><CloudAccount/>
  <div className="journalheading"><div><h1>Дневник</h1><p>Питание, активность и вес</p></div><div className="datebar"><button aria-label="Предыдущий день" onClick={()=>changeDate(-1)}><ChevronLeft size={18}/></button><input aria-label="Дата" type="date" value={date} onChange={e=>setDate(e.target.value)}/><button aria-label="Следующий день" onClick={()=>changeDate(1)}><ChevronRight size={18}/></button></div></div>
  <div className="journalmetrics"><div><small>Калории</small><strong>{daily.length?round(sum.kcal).toLocaleString("ru-RU"):"—"} <span>ккал</span></strong></div><div><small>Белок</small><strong>{daily.length?round(sum.protein):"—"} <span>г</span></strong></div><div><small>Жиры</small><strong>{daily.length?round(sum.fat):"—"} <span>г</span></strong></div><div><small>Углеводы</small><strong>{daily.length?round(sum.carbs):"—"} <span>г</span></strong></div></div>
  <div className="journalgrid"><div className="journalprimary">
