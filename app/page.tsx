@@ -56,7 +56,8 @@ const october15Food:FoodEntry[]=[
 {id:"chat-2026-10-15-soup",date:"2026-10-15",name:"Суп с фрикадельками, порция",grams:350,kcal100:60,protein100:4,fat100:3,carbs100:4},
 {id:"chat-2026-10-15-rice",date:"2026-10-15",name:"Рис с двумя креветками",grams:320,kcal100:137.5,protein100:5,fat100:2.5,carbs100:26},
 {id:"chat-2026-10-15-buckwheat-stew",date:"2026-10-15",name:"Гречка с говяжьей и куриной тушёнкой",grams:250,kcal100:140,protein100:8,fat100:6.4,carbs100:12.4},
-{id:"chat-2026-10-15-cottage",date:"2026-10-15",name:"Творог 5%, 290 г",grams:290,kcal100:121,protein100:17,fat100:5,carbs100:2}
+{id:"chat-2026-10-15-cottage",date:"2026-10-15",name:"Творог 5%, 290 г",grams:290,kcal100:121,protein100:17,fat100:5,carbs100:2},
+{id:"chat-2026-10-15-jam",date:"2026-10-15",name:"Варенье к творогу, 1–2 ч. л. (оценка)",grams:10,kcal100:260,protein100:0.3,fat100:0,carbs100:65}
 ];
 const october12Training:Training={id:"chat-2026-10-12-strength-a",date:"2026-10-12",type:"Силовая А — выполнена",minutes:75,notes:"15 мин степпер, 3 круга по 12 повторений: гоблет 17,5 кг; жим лёжа 50 кг; верхний блок 42,5 кг; румынская тяга 2×17,5 кг. Планка 3×1 мин, жук 3×20 на сторону. В конце 15 мин дорожка."};
 const empty={name:"",grams:"",kcal100:"",protein100:"",fat100:"",carbs100:""};
