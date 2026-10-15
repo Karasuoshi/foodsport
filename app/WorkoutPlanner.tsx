@@ -7,7 +7,7 @@ const weekdays=["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
 export default function WorkoutPlanner({date,onDateChange}:{date:string;onDateChange:(d:string)=>void}){
  const [schedule,setSchedule]=useState<ScheduleConfig>(defaultSchedule);
  const [expanded,setExpanded]=useState(false);
- useEffect(()=>{try{const saved=localStorage.getItem("fs-workout-schedule-v1");if(saved)setSchedule(JSON.parse(saved))}catch{}},[]);
+ useEffect(()=>{try{localStorage.removeItem("fs-workout-schedule-v1")}catch{}setSchedule(defaultSchedule)},[]);
  const planned=workoutForDate(date,schedule);
  const monday=shift(date,-((new Date(date+"T12:00:00").getDay()+6)%7));
  return <section className="journalpanel workoutplanner">
