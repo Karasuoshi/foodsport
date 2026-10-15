@@ -20,8 +20,11 @@
 ## Verification and remaining work
 - Local typecheck, production export and unit tests cover arithmetic, dates, serialization, account-specific cache keys, delta writes and review corrections.
 - Transaction-only live database test: repeat review upsert updates the same composite key; a different JWT subject cannot read it. Test transaction rolls back.
-- These are NOT two-device browser tests. Still verify on two real signed-in devices: write from ChatGPT -> see on A/B within 15s; correction -> both update; reopen browser -> remains logged in; expired token refresh; failed connection -> recovery copy; deletion is not resurrected.
-- Owner email confirmation is required before first real ChatGPT journal write in this conversation. Do not infer it from a sole account.
+- User confirmed matching cloud data on two physical devices. Live propagation of a new chat write still needs user confirmation. Remaining device checks: write from ChatGPT -> see on A/B within 15s; correction -> both update; reopen browser -> remains logged in; expired token refresh; failed connection -> recovery copy; deletion is not resurrected.
+- Owner email was explicitly confirmed in the active conversation. Other agents must resolve identity from authorized context; do not infer it from a sole account.
 - Supabase advisors report leaked-password protection disabled. No auth settings changed.
 - Old personal seed data remains in repository/history; do not assert that history was sanitized. Cleanup needs a separate scoped plan.
 - Other agents require separately authorized GitHub and Supabase access. Read AGENTS.md and this document; older instructions to log meals in GitHub are superseded.
+
+## Dashboard follow-up
+Weekly summary now names recorded activities and shows calories/protein without replacing them with a checkmark. Completed sessions are displayed separately from the code-based workout plan.

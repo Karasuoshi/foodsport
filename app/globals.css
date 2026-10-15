@@ -102,3 +102,5 @@
 .workoutfinish.finished{background:#e6f5ee;color:#167b6d}
 .workoutnote{margin:15px 0 0}
 @media(max-width:650px){.workoutweek{gap:3px}.workoutday{padding:9px 1px}.workoutday small{font-size:9px}.workoutdetail{flex-wrap:wrap}.workoutstepheading{flex-wrap:wrap}}
+
+.weeksummary{display:flex;flex-direction:column;gap:8px}.weeksummaryrow{display:grid;grid-template-columns:90px minmax(0,1.2fr) minmax(0,1fr);gap:12px;align-items:center;text-align:left;padding:14px;border:1px solid #e7eeee;border-radius:10px;background:#fff;color:#254440;font:inherit}.weeksummaryrow.selected{border-color:#208a7a;background:#eff9f5}.weeksummaryrow strong{font-size:13px}.weeksummaryrow span{font-size:13px;line-height:1.5}.weeksummaryrow small{display:block;color:#637d79;font-size:11px}.completedtraining p{line-height:1.6;color:#526b67}.completedtraining+.completedtraining{margin-top:16px}@media(max-width:650px){.weeksummaryrow{grid-template-columns:75px minmax(0,1fr);gap:8px}.weeksummaryrow>span:last-child{grid-column:2}}
