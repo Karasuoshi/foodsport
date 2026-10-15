@@ -10,7 +10,7 @@ type Tab="overview"|"food"|"weight"|"training"|"health"|"plan";
 type Weight={id:string;date:string;value:number};
 type Training={id:string;date:string;type:string;minutes:number;notes:string};
 type PlanItem={id:string;date:string;title:string;done:boolean};
-type DayReview={date:string;status:"complete"|"no-data";updatedAt:string};
+type DayReview={date:string;status:"complete"|"no-data";updatedAt:string;score?:number|null;comment?:string|null};
 const dayShift=(value:string,delta:number)=>{const d=new Date(value+"T12:00:00");d.setDate(d.getDate()+delta);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-")};
 const WEEK_START="2026-10-12";
 const starterPlan:PlanItem[]=[
@@ -86,7 +86,7 @@ export default function Home(){
  <div className="journalgrid"><div className="journalprimary">
  <section className="journalpanel"><div className="journalpanelhead"><div><h2>Питание</h2><small>{reviewed?.status==="complete"?"День заполнен":daily.length?"Записи за день":"Нет записей"}</small></div></div>
  {daily.length?<div className="mealstable"><div className="mealstablehead"><span>Продукт</span><span>Ккал</span><span>Белок</span><span></span></div>{daily.map(e=><div className="mealrow" key={e.id}><div><strong>{e.name}</strong><small>{e.grams} г · Ж {round(macros(e).fat)} · У {round(macros(e).carbs)}</small></div><b>{round(macros(e).kcal)}</b><b>{round(macros(e).protein)} г</b><span/></div>)}<div className="mealtotal"><strong>Итого</strong><b>{round(sum.kcal)}</b><b>{round(sum.protein)} г</b><span/></div></div>:<p className="journalempty">Питание за этот день пока не записано.</p>}
- <div className="journalcheck"><span>{reviewed?.status==="complete"?"✓ Дневник за день проверен":"Питание за день"}</span></div></section>
+ {reviewed?.score!=null&&<p><strong>Оценка дня: {reviewed.score}/10</strong>{reviewed.comment&&<> — {reviewed.comment}</>}</p>}<div className="journalcheck"><span>{reviewed?.status==="complete"?"✓ Дневник за день проверен":"Питание за день"}</span></div></section>
  <WorkoutPlanner date={date} onDateChange={setDate}/>
 
  <section className="journalpanel"><div className="journalpanelhead"><h2>Неделя по дням</h2></div><div className="journalweek">{Array.from({length:7},(_,i)=>dayShift(date,-((new Date(date+"T12:00:00").getDay()+6)%7)+i)).map(d=>{const es=entries.filter(e=>e.date===d);const ts=trainings.filter(t=>t.date===d);const w=weights.find(x=>x.date===d);const confirmed=dayReviews.some(x=>x.date===d&&x.status==="complete");return <button key={d} className={d===date?"journalday selected":"journalday"} onClick={()=>setDate(d)}><strong>{new Date(d+"T12:00:00").toLocaleDateString("ru-RU",{weekday:"short"})}</strong><span>{new Date(d+"T12:00:00").getDate()}</span><small>{confirmed?"✓":es.length?round(total(es).kcal)+" ккал":"Нет еды"}</small><small>{ts.length?"🏋 "+ts.length:"—"}</small>{w&&<small>{w.value} кг</small>}</button>})}</div></section>

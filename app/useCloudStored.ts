@@ -1,42 +1,52 @@
 "use client";
-import {Dispatch,SetStateAction,useCallback,useEffect,useRef,useState} from "react";
-import {cloudRequest,getSession} from "./CloudAccount";
-type Item={id?:string;date?:string;updatedAt?:string};
-const tables:Record<string,string>={"fs-food-v1":"food_entries","fs-weights-v1":"weights","fs-training-v1":"trainings","fs-day-reviews-v1":"day_reviews","fs-plan-2026-10-12-v1":"plan_items"};
-const fields:Record<string,string[]>={food_entries:["id","date","name","grams","kcal100","protein100","fat100","carbs100"],weights:["id","date","value"],trainings:["id","date","type","minutes","notes"],day_reviews:["date","status","updatedAt"],plan_items:["id","date","title","done"]};
-const idOf=(x:Item)=>String(x.id??x.date);
-const toDb=(x:Item,table:string,user_id:string)=>{const out:Record<string,unknown>={user_id};for(const f of fields[table]){if((x as Record<string,unknown>)[f]!==undefined)out[f==="updatedAt"?"updated_at":f]=(x as Record<string,unknown>)[f]}return out};
-const fromDb=(x:Record<string,unknown>,table:string)=>{const out:Item={};for(const f of fields[table]){const v=x[f==="updatedAt"?"updated_at":f];if(v!==undefined)(out as Record<string,unknown>)[f]=v}return out};
-export default function useCloudStored<T extends Item>(key:string,initial:T[]):[T[],Dispatch<SetStateAction<T[]>>]{
- const [state,setState]=useState<T[]>(initial);const current=useRef(state);current.current=state;
- const [ready,setReady]=useState(false);const token=useRef<string|null>(null);const userId=useRef<string|null>(null);
+import {Dispatch,SetStateAction,useCallback,useEffect,useRef,useState} from 'react';
+import {cloudRequest,getSession} from './CloudAccount';
+import {Item,tables,cacheKey,conflictQuery,toDb,fromDb,changes} from '../lib/cloud';
+// Cloud is authoritative. Legacy local data is retained, never silently uploaded.
+export default function useCloudStored<T extends Item>(key:string,initial:T[]):[T[],Dispatch<SetStateAction<T[]>>] {
+ const [state,setState]=useState<T[]>([]);
+ const current=useRef<T[]>([]), owner=useRef<string|null>(null), ready=useRef(false);
+ const queue=useRef(Promise.resolve()), pending=useRef(0), loading=useRef(false), failed=useRef(false), revision=useRef(0);
  const table=tables[key];
- const reload=useCallback(async()=>{setReady(false);try{
-   const session=await getSession();token.current=session?.access_token??null;userId.current=session?.user.id??null;
-   const raw=localStorage.getItem(key);let saved:T[]=initial;
-   if(raw){const local=JSON.parse(raw);if(Array.isArray(local)){const m=new Map<string,T>();for(const item of local)m.set(idOf(item),item);for(const item of initial)m.set(idOf(item),item);saved=[...m.values()]}}
-   if(!session){setState(saved);current.current=saved;setReady(true);return}
-   const remote=await cloudRequest(table,"GET",session.access_token,undefined,"?select=*");
-   const marker="fs-cloud-initialized-"+session.user.id+"-"+key;
-   let merged:T[];
-   if(!localStorage.getItem(marker)){
-     const m=new Map<string,T>();for(const item of saved)m.set(idOf(item),item);
-     for(const item of remote)m.set(idOf(fromDb(item,table)),fromDb(item,table) as T);
-     merged=[...m.values()];
-     const existing=new Set(remote.map((x:Record<string,unknown>)=>idOf(x)));
-     const missing=merged.filter(x=>!existing.has(idOf(x)));
-     if(missing.length)await cloudRequest(table,"POST",session.access_token,missing.map(x=>toDb(x,table,session.user.id)));
-     localStorage.setItem(marker,"1");
-   }else merged=remote.map((x:Record<string,unknown>)=>fromDb(x,table) as T);
-   setState(merged);current.current=merged;localStorage.setItem(key,JSON.stringify(merged));
- }catch(e){console.error("FoodSport sync failed",e);const raw=localStorage.getItem(key);if(raw){try{const parsed=JSON.parse(raw);if(Array.isArray(parsed))setState(parsed)}catch{}}}finally{setReady(true)}},[key,table]);
- useEffect(()=>{void reload();window.addEventListener("foodsport-auth-changed",reload);return()=>window.removeEventListener("foodsport-auth-changed",reload)},[reload]);
- const update=useCallback<Dispatch<SetStateAction<T[]>>>((action)=>{const old=current.current;const next=typeof action==="function"?(action as (p:T[])=>T[])(old):action;current.current=next;setState(next);localStorage.setItem(key,JSON.stringify(next));
-   if(!ready||!token.current||!userId.current)return;
-   const t=token.current,u=userId.current;const oldIds=new Set(old.map(idOf)),nextIds=new Set(next.map(idOf));
-   const removed=[...oldIds].filter(id=>!nextIds.has(id));
-   const changed=next.filter(item=>{const prev=old.find(x=>idOf(x)===idOf(item));return !prev||JSON.stringify(prev)!==JSON.stringify(item)});
-   void (async()=>{try{if(changed.length)await cloudRequest(table,"POST",t,changed.map(x=>toDb(x,table,u)));for(const id of removed){const col=table==="day_reviews"?"date":"id";await cloudRequest(table,"DELETE",t,undefined,"?"+col+"=eq."+encodeURIComponent(id))}}catch(e){console.error("FoodSport cloud save failed",e);window.alert("Не удалось сохранить изменения в облако. Локальная копия осталась в браузере.")}})();
- },[key,ready,table]);
+ const reload=useCallback(async()=>{
+  if(loading.current||pending.current||failed.current)return;
+  loading.current=true;
+  const version=revision.current;
+  try {
+   const session=await getSession();
+   if(!session){ready.current=false;owner.current=null;current.current=[];setState([]);return;}
+   if(owner.current!==session.user.id){owner.current=session.user.id;ready.current=false;current.current=[];setState([]);}
+   const user=session.user.id;
+   const remote=await cloudRequest(table,'GET',session.access_token,undefined,'?select=*',user);
+   if(version!==revision.current||pending.current||owner.current!==user)return;
+   const rows=remote.map((x:Record<string,unknown>)=>fromDb(x,table) as T);
+   current.current=rows;setState(rows);localStorage.setItem(cacheKey(key,user),JSON.stringify(rows));ready.current=true;
+  }catch { /* Keep the last successfully loaded view. Never log journal data or tokens. */ }
+  finally {loading.current=false;}
+ },[key,table]);
+ useEffect(()=>{
+  void reload();
+  const refresh=()=>{if(document.visibilityState==='visible')void reload();};
+  const interval=setInterval(refresh,15000);
+  window.addEventListener('foodsport-auth-changed',refresh);window.addEventListener('focus',refresh);window.addEventListener('online',refresh);document.addEventListener('visibilitychange',refresh);
+  return()=>{clearInterval(interval);window.removeEventListener('foodsport-auth-changed',refresh);window.removeEventListener('focus',refresh);window.removeEventListener('online',refresh);document.removeEventListener('visibilitychange',refresh);};
+ },[reload]);
+ const update=useCallback<Dispatch<SetStateAction<T[]>>>((action)=>{
+  if(!ready.current||!owner.current||failed.current){window.alert('Дождись загрузки дневника. Если сохранение ранее не удалось, обнови страницу и повтори изменение.');return;}
+  const old=current.current,next=typeof action==='function'?(action as (p:T[])=>T[])(old):action;
+  const user=owner.current,{changed,removed}=changes(old,next);
+  revision.current++;pending.current++;current.current=next;setState(next);
+  // Separate recovery copy survives failed writes; reload never treats it as committed.
+  localStorage.setItem(cacheKey(key,user)+':unsaved',JSON.stringify(next));
+  queue.current=queue.current.then(async()=>{
+   if(failed.current)return;
+   try {
+    const session=await getSession();if(!session||session.user.id!==user)throw Error('Session changed');
+    if(changed.length)await cloudRequest(table,'POST',session.access_token,changed.map(x=>toDb(x,table,user)),conflictQuery(table),user);
+    for(const id of removed)await cloudRequest(table,'DELETE',session.access_token,undefined,`?${table==='day_reviews'?'date':'id'}=eq.${encodeURIComponent(id)}&user_id=eq.${user}`,user);
+    localStorage.setItem(cacheKey(key,user),JSON.stringify(next));
+   }catch {failed.current=true;window.alert('Не удалось сохранить в облако. Копия изменений осталась в браузере. Обнови страницу и повтори изменение.');}
+  }).finally(()=>{pending.current--;if(!pending.current&&!failed.current){localStorage.removeItem(cacheKey(key,user)+':unsaved');void reload();}});
+ },[key,table,reload]);
  return [state,update];
 }

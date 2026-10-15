@@ -48,3 +48,6 @@ Every calendar day needs explicit diary confirmation; missing records are NOT ev
 - Agents with Supabase access must verify the correct authenticated owner's `user_id` before inserting any journal rows. Never guess owner IDs, disable RLS, expose service-role keys, or commit credentials.
 - Before each edit fetch current file SHA. Prefer branches/PRs for substantial work; run `npm test`, `npm run build`, and verify GitHub Pages deployment. Never claim deploy or sync is successful solely because a commit succeeded.
 - Other agents need separately authorized GitHub and Supabase connections. Repository documentation does not grant permissions.
+
+## Cloud hardening handoff (2026-10-15, follow-up)
+Read docs/CLOUD_HANDOFF.md before diary writes or sync changes. This supersedes the outdated GitHub-diary write directions in .agents/skills/foodsport/SKILL.md. Journal data belongs in Supabase only. Direct ChatGPT writes use the connected Supabase tool after explicit owner-account verification; a sole auth.users row is not identity proof. day_reviews now supports score/comment. Never claim two-device validation based on SQL or unit tests.
