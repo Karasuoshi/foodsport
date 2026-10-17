@@ -28,3 +28,6 @@
 
 ## Dashboard follow-up
 Weekly summary now names recorded activities and shows calories/protein without replacing them with a checkmark. Completed sessions are displayed separately from the code-based workout plan.
+
+## Cloud workout schedule overrides
+WorkoutPlanner reads owner-scoped plan_items through useCloudStored. Reserved IDs use workout-plan:<owner UUID>:<date>:<workout ID or rest>; date is the scheduled date, title is a short display label, done does not create a completed workout. Recognized workout IDs come from lib/workouts.ts. Keep exactly one reserved row per owner/date; replace prior reserved rows atomically when rescheduling. These overrides take precedence over defaultSchedule; ordinary task rows are ignored. Personal schedule changes belong in Supabase, not source code. Keep journal notes concise; analysis and ingestion caveats stay in chat.
