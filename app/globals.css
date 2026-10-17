@@ -33,7 +33,7 @@
 .journalpanelhead small{display:block;font-size:12px;color:#899a9f;margin-top:5px}
 .journaladd{display:inline-flex;align-items:center;gap:5px;border:1px solid #d4e8e0;border-radius:8px;padding:9px 12px;background:#edf8f3;color:#177a6b;font-weight:700;font-size:12px}
 
-.mealstablehead,.mealrow,.mealtotal{display:grid;grid-template-columns:minmax(0,1fr) 66px 66px 58px;gap:8px;align-items:center}
+.mealstablehead,.mealrow,.mealtotal{display:grid;grid-template-columns:minmax(0,1fr) repeat(4, 58px);gap:8px;align-items:center}
 .mealstablehead{color:#8c9b9e;font-size:11px;padding:10px 0;border-bottom:1px solid #e8eeee}
 .mealrow{padding:15px 0;border-bottom:1px solid #edf1f0}
 .mealrow strong{font-size:14px}
@@ -68,7 +68,7 @@
 .journalmissing strong{color:#198879}
 .journalfooter{text-align:center;margin:28px 0;color:#9ba8ac;font-size:11px}
 @media(max-width:900px){.journalgrid{grid-template-columns:1fr}.journalside{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:650px){.journalheader{padding:18px}.journalmain{padding:20px 12px}.journalheading{flex-direction:column;align-items:stretch}.journalmetrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.journalmetrics>div,.journalpanel{padding:15px}.journalmetrics strong{font-size:23px}.journalside{grid-template-columns:1fr}.mealstablehead,.mealrow,.mealtotal{grid-template-columns:minmax(0,1fr) 48px 48px 44px;gap:4px}.mealbuttons button{padding:2px}.journalweek{gap:3px}.journalday{padding:9px 1px}.journalcheck{align-items:flex-start;flex-direction:column}}
+@media(max-width:650px){.journalheader{padding:18px}.journalmain{padding:20px 12px}.journalheading{flex-direction:column;align-items:stretch}.journalmetrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.journalmetrics>div,.journalpanel{padding:15px}.journalmetrics strong{font-size:23px}.journalside{grid-template-columns:1fr}.mealstablehead,.mealrow,.mealtotal{grid-template-columns:minmax(110px,1fr) repeat(4, 44px);gap:4px}.mealbuttons button{padding:2px}.journalweek{gap:3px}.journalday{padding:9px 1px}.journalcheck{align-items:flex-start;flex-direction:column}}
 
 .workoutweek{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
 .workoutday{display:flex;flex-direction:column;align-items:center;gap:6px;border:1px solid #e4ebea;border-radius:9px;background:#fff;padding:10px 2px;min-width:0;min-height:88px}
@@ -104,3 +104,5 @@
 @media(max-width:650px){.workoutweek{gap:3px}.workoutday{padding:9px 1px}.workoutday small{font-size:9px}.workoutdetail{flex-wrap:wrap}.workoutstepheading{flex-wrap:wrap}}
 
 .weeksummary{display:flex;flex-direction:column;gap:8px}.weeksummaryrow{display:grid;grid-template-columns:90px minmax(0,1.2fr) minmax(0,1fr);gap:12px;align-items:center;text-align:left;padding:14px;border:1px solid #e7eeee;border-radius:10px;background:#fff;color:#254440;font:inherit}.weeksummaryrow.selected{border-color:#208a7a;background:#eff9f5}.weeksummaryrow strong{font-size:13px}.weeksummaryrow span{font-size:13px;line-height:1.5}.weeksummaryrow small{display:block;color:#637d79;font-size:11px}.completedtraining p{line-height:1.6;color:#526b67}.completedtraining+.completedtraining{margin-top:16px}@media(max-width:650px){.weeksummaryrow{grid-template-columns:75px minmax(0,1fr);gap:8px}.weeksummaryrow>span:last-child{grid-column:2}}
+
+.mealstable{overflow-x:auto}.mealstablehead,.mealrow,.mealtotal{min-width:310px}
