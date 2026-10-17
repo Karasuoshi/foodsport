@@ -1,13 +1,16 @@
 "use client";
 import {CalendarDays,ChevronDown,ChevronUp} from "lucide-react";
-import {useEffect,useState} from "react";
-import {defaultSchedule,workoutForDate,ScheduleConfig} from "../lib/workouts";
+import {useState} from "react";
+import {defaultSchedule,workoutForDate,ScheduleConfig,workouts} from "../lib/workouts";
+import useCloudStored from "./useCloudStored";
 const shift=(d:string,n:number)=>{const x=new Date(d+"T12:00:00");x.setDate(x.getDate()+n);return [x.getFullYear(),String(x.getMonth()+1).padStart(2,"0"),String(x.getDate()).padStart(2,"0")].join("-")};
 const weekdays=["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
 export default function WorkoutPlanner({date,onDateChange}:{date:string;onDateChange:(d:string)=>void}){
- const [schedule,setSchedule]=useState<ScheduleConfig>(defaultSchedule);
+ const [plans]=useCloudStored<{id:string;date:string;title:string;done:boolean}>("fs-plan-2026-10-12-v1",[]);
+ // Reserved workout-plan:<owner>:<date>:<workoutId|rest> rows override dated defaults.
+ const overrides=plans.filter(p=>p.id.startsWith("workout-plan:")).flatMap(p=>{const id=p.id.split(":").at(-1);return id==="rest"||workouts.some(w=>w.id===id)?[{date:p.date,workoutId:id==="rest"?null:id!}]:[]});
+ const schedule:ScheduleConfig={...defaultSchedule,overrides:[...overrides,...defaultSchedule.overrides]};
  const [expanded,setExpanded]=useState(false);
- useEffect(()=>{try{localStorage.removeItem("fs-workout-schedule-v1")}catch{}setSchedule(defaultSchedule)},[]);
  const planned=workoutForDate(date,schedule);
  const monday=shift(date,-((new Date(date+"T12:00:00").getDay()+6)%7));
  return <section className="journalpanel workoutplanner">
