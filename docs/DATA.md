@@ -10,7 +10,7 @@
 | `food_entries` | `id` text | `date, name, grams (>0), kcal100, protein100, fat100, carbs100, created_at` | Одна позиция еды. КБЖУ — **на 100 г**, порция — `grams`. `created_at` задаёт порядок на сайте. |
 | `weights` | `id` text | `date, value (>0)` | Вес в кг. Одно измерение на дату. |
 | `trainings` | `id` text | `date, type, minutes, notes, created_at` | **Выполненная** тренировка. |
-| `day_reviews` | `(user_id, date)` | `status ('complete'\|'no-data'), score 1–10 null, comment null` | Закрытие дня и его оценка. |
+| `day_reviews` | `(user_id, date)` | `status ('complete'\|'no-data'), score 1–10 null, comment null` | Оценка дня. `status` сайт не показывает; при оценке ставить `'complete'`. |
 | `plan_items` | `id` text | `date, title, done` | Перенос тренировки на дату (формат ниже). Строки с id `mon`…`sun` — старые примеры, сайт их не показывает. |
 | `settings` | `user_id` | `kcal_target, protein_min, protein_max, weight_goal` | Цели владельца. На сайте показываются как ориентиры. Менять только с его согласия. |
 
@@ -48,7 +48,7 @@ returning *;
 
 **Тренировка (факт):** `trainings (id='training-<дата>-<вид>', date, type, minutes, notes)`. `type` — короткое название («Силовая Б», «Плавание»), `notes` — кратко: упражнения, веса, подходы, дистанция, пульс.
 
-**Закрытие и оценка дня:**
+**Оценка дня:**
 ```sql
 insert into day_reviews (user_id,date,status,score,comment,updated_at)
 values ('<OWNER>','2026-01-01','complete',7,'Белка достаточно, мало овощей',now())

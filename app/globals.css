@@ -40,13 +40,12 @@ button:disabled { opacity: .5; cursor: default; }
 .metricbar.over i { background: #d39b45; }
 .journalmetrics .metricgoal { margin-top: 6px; font-size: 11px; }
 .mealstable { overflow-x: auto; }
-.mealstablehead, .mealrow, .mealtotal { display: grid; grid-template-columns: minmax(0, 1fr) repeat(4, 58px); gap: 8px; align-items: center; min-width: 310px; }
+.mealstablehead, .mealrow { display: grid; grid-template-columns: minmax(0, 1fr) repeat(4, 58px); gap: 8px; align-items: center; min-width: 310px; }
 .mealstablehead { color: #8c9b9e; font-size: 11px; padding: 10px 0; border-bottom: 1px solid #e8eeee; }
 .mealrow { padding: 15px 0; border-bottom: 1px solid #edf1f0; }
 .mealrow strong { font-size: 14px; }
 .mealrow small { display: block; color: #8b9b9e; font-size: 12px; margin-top: 5px; }
-.mealrow b, .mealtotal b { font-size: 13px; }
-.mealtotal { padding-top: 16px; }
+.mealrow b { font-size: 13px; }
 .dayscore { border-top: 1px solid #e8eeee; margin: 17px 0 0; padding-top: 15px; font-size: 14px; line-height: 1.5; }
 
 /* Weight */
@@ -59,18 +58,7 @@ button:disabled { opacity: .5; cursor: default; }
 .weightone small { display: block; font-size: 12px; color: #809697; margin-top: 10px; }
 .empty { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 170px; color: #9aadae; text-align: center; font-size: 14px; }
 
-/* Unclosed days */
-.journalcount { color: #198879; background: #eff8f5; padding: 5px 9px; border-radius: 7px; font-size: 12px; }
-.journalmissing { display: flex; justify-content: space-between; width: 100%; padding: 13px 0; border: 0; border-bottom: 1px solid #edf1f0; background: #fff; text-align: left; font-size: 13px; }
-.journalmissing strong { color: #198879; }
-
 /* Workouts */
-.workoutweek { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
-.workoutday { display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid #e4ebea; border-radius: 9px; background: #fff; padding: 10px 2px; min-width: 0; min-height: 88px; }
-.workoutday.active { background: #edf8f4; border-color: #168b7a; }
-.workoutday span, .workoutday small { font-size: 10px; color: #829397; }
-.workoutday b { font-size: 18px; }
-.workoutday small { overflow-wrap: anywhere; text-align: center; }
 .workoutdetail { padding: 20px 0 12px; }
 .workoutdetail strong { font-size: 17px; }
 .workoutdetail p { color: #829397; font-size: 12px; line-height: 1.5; }
@@ -112,10 +100,7 @@ button:disabled { opacity: .5; cursor: default; }
   .journalmetrics > div, .journalpanel { padding: 15px; }
   .journalmetrics strong { font-size: 23px; }
   .journalside { grid-template-columns: 1fr; }
-  .mealstablehead, .mealrow, .mealtotal { grid-template-columns: minmax(110px, 1fr) repeat(4, 44px); gap: 4px; }
-  .workoutweek { gap: 3px; }
-  .workoutday { padding: 9px 1px; }
-  .workoutday small { font-size: 9px; }
+  .mealstablehead, .mealrow { grid-template-columns: minmax(110px, 1fr) repeat(4, 44px); gap: 4px; }
   .weeksummaryrow { grid-template-columns: 75px minmax(0, 1fr); gap: 8px; }
   .weeksummaryrow > span:last-child { grid-column: 2; }
 }

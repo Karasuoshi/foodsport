@@ -8,8 +8,7 @@ import { scheduleFromPlans, trainingDay } from "../lib/training";
 import type { Settings, Weight } from "../lib/cloud";
 import useJournal from "./useJournal";
 import Login from "./Login";
-import WorkoutPlanner from "./WorkoutPlanner";
-import TrainingJournal, { TrainingSummary } from "./TrainingJournal";
+import TrainingDay, { TrainingSummary } from "./TrainingDay";
 
 const shift = (value: string, delta: number) => {
   const d = new Date(value + "T12:00:00");
@@ -54,13 +53,10 @@ export default function Home() {
   const latest = sortedWeights.at(-1);
   const previous = sortedWeights.at(-2);
   const now = today();
-  // Today counts only once the day is closed, so a half-logged day does not drag the average down.
-  const recorded = week.filter((d) => d.date < now || reviews.some((r) => r.date === d.date && r.status === "complete")).map((d) => total(food.filter((e) => e.date === d.date))).filter((t) => t.kcal > 0);
+  // Past days only: a half-logged today would drag the average down.
+  const recorded = week.filter((d) => d.date < now).map((d) => total(food.filter((e) => e.date === d.date))).filter((t) => t.kcal > 0);
   const avg = (k: "kcal" | "protein") => recorded.reduce((n, t) => n + t[k], 0) / recorded.length;
   const sessions = week.reduce((n, d) => n + d.sessions.length, 0);
-  const missing = Array.from({ length: 14 }, (_, i) => shift(now, -i - 1))
-    .filter((d) => !reviews.some((r) => r.date === d && r.status === "complete"))
-    .slice(0, 7);
 
   if (status === "signed-out") return <Shell><Login /></Shell>;
   if (!data) {
@@ -96,7 +92,7 @@ export default function Home() {
       <div className="journalgrid">
         <div className="journalprimary">
           <section className="journalpanel">
-            <div className="journalpanelhead"><div><h2>Питание</h2><small>{review?.status === "complete" ? "День закрыт" : daily.length ? "День не закрыт" : "Нет записей"}</small></div></div>
+            <div className="journalpanelhead"><h2>Питание</h2></div>
             {daily.length ? (
               <div className="mealstable">
                 <div className="mealstablehead"><span>Продукт</span><span>Ккал</span><span>Белок</span><span>Жиры</span><span>Углев.</span></div>
@@ -109,17 +105,15 @@ export default function Home() {
                     </div>
                   );
                 })}
-                <div className="mealtotal"><strong>Итого</strong><b>{round(sum.kcal)}</b><b>{round(sum.protein)} г</b><b>{round(sum.fat)} г</b><b>{round(sum.carbs)} г</b></div>
               </div>
             ) : <p className="journalempty">Питание за этот день не записано.</p>}
             {review?.score != null && <p className="dayscore"><strong>Оценка дня: {review.score}/10</strong>{review.comment && <> — {review.comment}</>}</p>}
           </section>
 
-          <WorkoutPlanner day={selected} week={week} onDateChange={setDate} />
-          <TrainingJournal day={selected} />
+          <TrainingDay key={date} day={selected} />
 
           <section className="journalpanel">
-            <div className="journalpanelhead"><div><h2>Итоги недели</h2><small>{recorded.length ? `В среднем ${num(avg("kcal"))} ккал · белок ${num(avg("protein"))} г · дней с записями: ${recorded.length}` : "Записей за неделю пока нет"}{` · тренировок: ${sessions}`}</small></div></div>
+            <div className="journalpanelhead"><div><h2>Неделя</h2><small>{recorded.length ? `В среднем ${num(avg("kcal"))} ккал · белок ${num(avg("protein"))} г · дней с записями: ${recorded.length}` : "Записей за неделю пока нет"}{` · тренировок: ${sessions}`}</small></div></div>
             <div className="weeksummary">
               {week.map((activity) => {
                 const d = activity.date;
@@ -127,16 +121,12 @@ export default function Home() {
                 const r = reviews.find((x) => x.date === d);
                 const t = total(entries);
                 const future = d > now;
-                const state = [
-                  r?.score != null ? `Оценка ${r.score}/10` : future ? "" : "Без оценки",
-                  r?.status === "complete" ? "день закрыт" : entries.length ? "день не закрыт" : "",
-                ].filter(Boolean).join(" · ");
                 return (
                   <button key={d} aria-pressed={d === date} className={"weeksummaryrow" + (d === date ? " selected" : "")} onClick={() => setDate(d)}>
                     <strong>{label(d, { weekday: "short", day: "numeric", month: "short" })}</strong>
                     <span>
                       {entries.length ? `${round(t.kcal)} ккал · Б ${round(t.protein)} · Ж ${round(t.fat)} · У ${round(t.carbs)} г` : future ? "Впереди" : "Питание не записано"}
-                      <small>{state}</small>
+                      {r?.score != null && <small>Оценка {r.score}/10</small>}
                     </span>
                     <TrainingSummary day={activity} />
                   </button>
@@ -155,14 +145,6 @@ export default function Home() {
               <p className="journaldelta">К прошлому измерению: {latest.value - previous.value > 0 ? "+" : ""}{(latest.value - previous.value).toFixed(1)} кг</p>
             )}
             <WeightGraph weights={sortedWeights} />
-          </section>
-          <section className="journalpanel">
-            <div className="journalpanelhead"><h2>Незакрытые дни</h2><span className="journalcount">{missing.length}</span></div>
-            {missing.length ? missing.map((d) => (
-              <button className="journalmissing" key={d} onClick={() => setDate(d)}>
-                <span>{label(d, { day: "numeric", month: "long" })}</span><strong>Открыть →</strong>
-              </button>
-            )) : <p className="journalempty">За последние две недели все дни закрыты.</p>}
           </section>
         </aside>
       </div>
