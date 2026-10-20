@@ -5,14 +5,11 @@ import { useMemo, useState, type ReactNode } from "react";
 import { Activity, BookOpen, ChevronLeft, ChevronRight, Scale } from "lucide-react";
 import { macros, round, today, total } from "../lib/food";
 import { scheduleFromPlans, trainingDay } from "../lib/training";
-import type { Weight } from "../lib/cloud";
+import type { Settings, Weight } from "../lib/cloud";
 import useJournal from "./useJournal";
 import Login from "./Login";
 import WorkoutPlanner from "./WorkoutPlanner";
 import TrainingJournal, { TrainingSummary } from "./TrainingJournal";
-
-// TODO(backlog): personal targets belong in Supabase, not in public code.
-const WEIGHT_GOAL_KG = 90;
 
 const shift = (value: string, delta: number) => {
   const d = new Date(value + "T12:00:00");
@@ -20,6 +17,7 @@ const shift = (value: string, delta: number) => {
   return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-");
 };
 const label = (d: string, opts: Intl.DateTimeFormatOptions) => new Date(d + "T12:00:00").toLocaleDateString("ru-RU", opts);
+const num = (n: number) => round(n).toLocaleString("ru-RU");
 const time = (iso: string) => new Date(iso).toLocaleString("ru-RU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
 function Shell({ children }: { children: ReactNode }) {
@@ -41,6 +39,7 @@ export default function Home() {
   const reviews = data?.reviews ?? [];
   const plans = data?.plans ?? [];
   const weights = data?.weights ?? [];
+  const goals: Settings = data?.settings ?? {};
 
   const schedule = useMemo(() => scheduleFromPlans(plans), [plans]);
   const week = useMemo(() => {
@@ -55,6 +54,10 @@ export default function Home() {
   const latest = sortedWeights.at(-1);
   const previous = sortedWeights.at(-2);
   const now = today();
+  // Today counts only once the day is closed, so a half-logged day does not drag the average down.
+  const recorded = week.filter((d) => d.date < now || reviews.some((r) => r.date === d.date && r.status === "complete")).map((d) => total(food.filter((e) => e.date === d.date))).filter((t) => t.kcal > 0);
+  const avg = (k: "kcal" | "protein") => recorded.reduce((n, t) => n + t[k], 0) / recorded.length;
+  const sessions = week.reduce((n, d) => n + d.sessions.length, 0);
   const missing = Array.from({ length: 14 }, (_, i) => shift(now, -i - 1))
     .filter((d) => !reviews.some((r) => r.date === d && r.status === "complete"))
     .slice(0, 7);
@@ -84,9 +87,10 @@ export default function Home() {
       {status === "offline" && <p className="syncnote">Нет связи с базой. Показаны данные на {time(data.syncedAt)}.</p>}
 
       <div className="journalmetrics">
-        {([["Калории", sum.kcal, "ккал"], ["Белок", sum.protein, "г"], ["Жиры", sum.fat, "г"], ["Углеводы", sum.carbs, "г"]] as const).map(([name, value, unit]) => (
-          <div key={name}><small>{name}</small><strong>{daily.length ? round(value).toLocaleString("ru-RU") : "—"} <span>{unit}</span></strong></div>
-        ))}
+        <Metric name="Калории" value={sum.kcal} unit="ккал" empty={!daily.length} target={goals.kcalTarget} />
+        <Metric name="Белок" value={sum.protein} unit="г" empty={!daily.length} target={goals.proteinMin} targetMax={goals.proteinMax} />
+        <Metric name="Жиры" value={sum.fat} unit="г" empty={!daily.length} />
+        <Metric name="Углеводы" value={sum.carbs} unit="г" empty={!daily.length} />
       </div>
 
       <div className="journalgrid">
@@ -115,7 +119,7 @@ export default function Home() {
           <TrainingJournal day={selected} />
 
           <section className="journalpanel">
-            <div className="journalpanelhead"><div><h2>Итоги недели</h2><small>Нажми на день, чтобы открыть его</small></div></div>
+            <div className="journalpanelhead"><div><h2>Итоги недели</h2><small>{recorded.length ? `В среднем ${num(avg("kcal"))} ккал · белок ${num(avg("protein"))} г · дней с записями: ${recorded.length}` : "Записей за неделю пока нет"}{` · тренировок: ${sessions}`}</small></div></div>
             <div className="weeksummary">
               {week.map((activity) => {
                 const d = activity.date;
@@ -146,7 +150,7 @@ export default function Home() {
           <section className="journalpanel">
             <div className="journalpanelhead"><h2>Вес</h2><Scale size={19} /></div>
             <div className="journalweight">{latest ? latest.value.toFixed(1) : "—"} <span>кг</span></div>
-            <p className="journalsub">Цель {WEIGHT_GOAL_KG} кг · измерение раз в неделю</p>
+            <p className="journalsub">{goals.weightGoal ? `Цель ${goals.weightGoal} кг · ` : ""}измерение раз в неделю</p>
             {latest && previous && (
               <p className="journaldelta">К прошлому измерению: {latest.value - previous.value > 0 ? "+" : ""}{(latest.value - previous.value).toFixed(1)} кг</p>
             )}
@@ -163,6 +167,19 @@ export default function Home() {
         </aside>
       </div>
     </Shell>
+  );
+}
+
+function Metric({ name, value, unit, empty, target, targetMax }: { name: string; value: number; unit: string; empty: boolean; target?: number; targetMax?: number }) {
+  const goal = target ? (targetMax && targetMax !== target ? `${num(target)}–${num(targetMax)}` : num(target)) : "";
+  const share = target ? Math.min(100, (value / target) * 100) : 0;
+  const over = target !== undefined && value > (targetMax ?? target) * 1.05;
+  return (
+    <div>
+      <small>{name}</small>
+      <strong>{empty ? "—" : num(value)} <span>{unit}</span></strong>
+      {goal && <><div className={"metricbar" + (over ? " over" : "")}><i style={{ width: (empty ? 0 : share) + "%" }} /></div><small className="metricgoal">ориентир {goal} {unit}</small></>}
+    </div>
   );
 }
 

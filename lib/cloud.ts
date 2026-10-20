@@ -4,8 +4,9 @@ import type { PlanItem, Training } from "./training";
 
 export type Weight = { id: string; date: string; value: number };
 export type DayReview = { date: string; status: "complete" | "no-data"; updatedAt?: string; score?: number | null; comment?: string | null };
+export type Settings = { kcalTarget?: number; proteinMin?: number; proteinMax?: number; weightGoal?: number };
 
-export const TABLES = ["food_entries", "weights", "trainings", "day_reviews", "plan_items"] as const;
+export const TABLES = ["food_entries", "weights", "trainings", "day_reviews", "plan_items", "settings"] as const;
 export type Table = (typeof TABLES)[number];
 
 const FIELDS: Record<Table, string[]> = {
@@ -14,8 +15,9 @@ const FIELDS: Record<Table, string[]> = {
   trainings: ["id", "date", "type", "minutes", "notes", "createdAt"],
   day_reviews: ["date", "status", "updatedAt", "score", "comment"],
   plan_items: ["id", "date", "title", "done"],
+  settings: ["kcalTarget", "proteinMin", "proteinMax", "weightGoal"],
 };
-const NUMERIC = new Set(["grams", "kcal100", "protein100", "fat100", "carbs100", "value", "minutes", "score"]);
+const NUMERIC = new Set(["grams", "kcal100", "protein100", "fat100", "carbs100", "value", "minutes", "score", "kcalTarget", "proteinMin", "proteinMax", "weightGoal"]);
 const column = (field: string) => field.replace(/[A-Z]/g, (c) => "_" + c.toLowerCase());
 
 /** Copies only known fields; user_id and unknown columns never reach the UI. */
@@ -36,6 +38,7 @@ export type Snapshot = {
   trainings: Training[];
   reviews: DayReview[];
   plans: PlanItem[];
+  settings: Settings | null;
   syncedAt: string;
 };
 
@@ -53,6 +56,7 @@ export function toSnapshot(raw: Record<Table, Record<string, unknown>[]>, synced
     trainings: rows("trainings") as unknown as Training[],
     reviews: rows("day_reviews") as unknown as DayReview[],
     plans: rows("plan_items") as unknown as PlanItem[],
+    settings: (rows("settings")[0] as Settings | undefined) ?? null,
     syncedAt,
   };
 }

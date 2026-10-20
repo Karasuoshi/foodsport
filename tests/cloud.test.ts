@@ -25,6 +25,13 @@ test("snapshot covers every table and orders rows stably", () => {
   assert.deepEqual([snap.weights, snap.trainings, snap.reviews, snap.plans], [[], [], [], []]);
 });
 
+test("settings become a single typed row or null", () => {
+  const raw = Object.fromEntries(TABLES.map((t) => [t, []])) as never;
+  assert.equal(toSnapshot(raw, "now").settings, null);
+  const row = { user_id: "owner", kcal_target: 2000, protein_min: 100, protein_max: 120, weight_goal: "80.5", updated_at: "t" };
+  assert.deepEqual(toSnapshot({ ...(raw as object), settings: [row] } as never, "now").settings, { kcalTarget: 2000, proteinMin: 100, proteinMax: 120, weightGoal: 80.5 });
+});
+
 test("cache is account-specific", () => {
   assert.notEqual(cacheKey("a"), cacheKey("b"));
 });

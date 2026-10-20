@@ -3,15 +3,16 @@
 Проект `kzyykhjjpalrhprcttow` (eu-central-1, free tier). Все таблицы лежат в схеме `public`, у каждой строки есть `user_id → auth.users`. RLS пускает пользователя только к его собственным строкам.
 
 ## Таблицы
+У всех таблиц есть `user_id uuid → auth.users` и `updated_at timestamptz default now()`. Полная схема — миграции в `docs/db/`, новая миграция кладётся туда же с тем же номером версии.
+
 | Таблица | Ключ | Поля | Смысл |
 |---|---|---|---|
-| `food_entries` | `id` text | `date, name, grams, kcal100, protein100, fat100, carbs100, updated_at` | Одна позиция еды. КБЖУ — **на 100 г**, порция — `grams`. |
-| `weights` | `id` text | `date, value` | Вес в кг. Одно измерение на дату. |
-| `trainings` | `id` text | `date, type, minutes, notes` | **Выполненная** тренировка. |
-| `day_reviews` | `(user_id, date)` | `status ('complete'\|'no-data'), score 1–10, comment, updated_at` | Закрытие дня и его оценка. |
-| `plan_items` | `id` text | `date, title, done` | Перенос тренировки на конкретную дату (формат ниже). |
-
-Эту таблицу сверить с базой при первом подключении: схема в репозитории не выгружена полностью. Миграции лежат в `docs/db/`.
+| `food_entries` | `id` text | `date, name, grams (>0), kcal100, protein100, fat100, carbs100, created_at` | Одна позиция еды. КБЖУ — **на 100 г**, порция — `grams`. `created_at` задаёт порядок на сайте. |
+| `weights` | `id` text | `date, value (>0)` | Вес в кг. Одно измерение на дату. |
+| `trainings` | `id` text | `date, type, minutes, notes, created_at` | **Выполненная** тренировка. |
+| `day_reviews` | `(user_id, date)` | `status ('complete'\|'no-data'), score 1–10 null, comment null` | Закрытие дня и его оценка. |
+| `plan_items` | `id` text | `date, title, done` | Перенос тренировки на дату (формат ниже). Строки с id `mon`…`sun` — старые примеры, сайт их не показывает. |
+| `settings` | `user_id` | `kcal_target, protein_min, protein_max, weight_goal` | Цели владельца. На сайте показываются как ориентиры. Менять только с его согласия. |
 
 ## Кто владелец
 1. Спроси у владельца почту его аккаунта на сайте, если её нет в приватном контексте.
@@ -39,6 +40,7 @@ on conflict (id) do update set date=excluded.date, name=excluded.name, grams=exc
 where food_entries.user_id='<OWNER>'
 returning *;
 ```
+- Если еда дописывается задним числом, задай `created_at` примерно временем приёма пищи (`'2026-01-01 13:00+03'`): так блюда встанут на сайте в нужном порядке.
 - ID читаемый и стабильный: `food-<дата>-<короткое-латиницей>`. Если такое блюдо в этот день уже есть, добавь `-2`. При повторной попытке записи используй тот же ID.
 - Если известна только КБЖУ всей порции, переведи её на 100 г: значение × 100 / grams.
 
@@ -56,6 +58,8 @@ returning *;
 ```
 
 **Перенос тренировки:** ID имеет вид `workout-plan:<OWNER>:<дата>:<workoutId|rest>`, где `workoutId` берётся из `lib/workouts.ts` (`a, b, swim, cycle, cardio, run`). На одну дату — одна такая строка: сначала удали прежнюю (`delete … where id like 'workout-plan:<OWNER>:<дата>:%'`), потом вставь новую. `title` — короткая подпись, `done=false`. Такая строка задаёт только план и не создаёт выполненную тренировку.
+
+**Цели:** `insert into settings (user_id,kcal_target,protein_min,protein_max,weight_goal) values (…) on conflict (user_id) do update set …, updated_at=now()`.
 
 **Удаление:** `delete from <таблица> where id='<id>' and user_id='<OWNER>' returning id;`
 
