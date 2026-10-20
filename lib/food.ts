@@ -5,7 +5,3 @@ export function total(entries:FoodEntry[]):Macros {return entries.reduce((a,e)=>
 export const round=(n:number)=>Math.round(n);
 export function localDate(d=new Date()):string {const y=d.getFullYear();const m=String(d.getMonth()+1).padStart(2,"0");const day=String(d.getDate()).padStart(2,"0");return `${y}-${m}-${day}`;}
 export const today=()=>localDate();
-export function validFood(e:FoodEntry):boolean {
- return e.name.trim().length>0 && Number.isFinite(e.grams) && e.grams>0 && e.grams<=100000 &&
- [e.kcal100,e.protein100,e.fat100,e.carbs100].every(v=>Number.isFinite(v)&&v>=0&&v<=1000);
-}

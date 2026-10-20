@@ -1,53 +1,38 @@
-# FoodSport agent instructions
+# FoodSport — ТЗ для агентов
 
-Read docs/PRD.md and docs/ARCHITECTURE.md before making changes.
-Keep all personal data out of source control and public logs.
-Nutrition: distinguish label-verified values from estimates; ask cooked vs raw weight when material; support user corrections and never silently overwrite them. Do not infer precise macros from photos alone.
-Coach: be concise, direct and evidence-aware; no shaming. Weekly trend matters more than one weigh-in. Avoid treating a calorie target as a mandatory minimum.
-Polar: import only consented scopes. Do not infer sleep quality from missing data. Different Vantage models may expose different metrics.
-Health: no autonomous diagnosis, medication changes or treatment recommendations. Flag concerning results for clinician review.
-Autonomy: proposing plans is allowed; require explicit user approval before materially changing goals, workout schedules, medical data or external actions.
-Interoperability: keep OpenAPI contracts versioned, document MCP adapters, and do not couple data to one LLM vendor.
-Tests: add unit tests for calorie arithmetic, correction precedence, timezone handling and multi-tenant isolation.
+Единая точка входа. Читай этот файл, затем только тот документ из `docs/`, который нужен для задачи.
 
-## Current implementation and handoff (2026-10-11)
-- Source of truth: this GitHub repository. Every agent must commit implementation, tests, docs and relevant decisions here, not just describe changes in chat.
-- Frontend: Next.js 14 static export under /foodsport, GitHub Pages workflow at .github/workflows/pages.yml.
-- Demo state is localStorage, **not secure or synced**. Do not enter real medical records.
-- Weekly planner: 12–18 October 2026, localStorage key fs-plan-2026-10-12-v1; initial tasks are editable examples, not a personalized prescription.
-- Nutrition tests: tests/food.test.ts, run npm test; CI also runs TypeScript and production build.
-- Before announcing a live URL, independently verify Pages deploy succeeded and site returns actual content. GitHub connector does not currently expose Pages settings or complete push-workflow listings.
-- **Public history warning:** an earlier README commit included private personal measurements. Current file edits do not remove commit history. Coordinate an approved history cleanup; do not falsely claim sanitized.
-- Next milestones: verify CI and Pages, exercise diary create/edit/delete/date and persistence in deployed app, then design secure backend/auth and AI provider gateway.
+## Что это
+- **Хранилище** — Supabase (Postgres с RLS). Здесь живут дневник питания, вес, тренировки, оценки дней и перенос тренировок.
+- **Сайт** — https://karasuoshi.github.io/foodsport/. Только визуализация: читает базу и показывает. Единственная форма — вход.
+- **Ввод данных** — делает агент по сообщениям владельца в чате. Владелец сам ничего не вводит и не правит.
+- **Репозиторий** — код сайта и это ТЗ. Он публичный, поэтому личных данных здесь нет.
 
-## Product pivot: zero-friction nutrition capture (2026-10-11)
-The owner rejected the manual six-field food form as the primary experience. Primary UX MUST be conversational multimodal intake: arbitrary natural-language messages, typo-tolerant descriptions, photos of food/packaging/labels/menus/receipts, optional follow-up corrections, transparent estimated portions/macros, confirmation then diary entry. Manual entry is fallback only.
-Current implementation adds a conversational inbox and photo picker, but **DOES NOT HAVE AI ANALYSIS**. Inbox drafts store only text and filename in localStorage; selected image is preview-only and discarded after submit. Do not describe it as photo recognition or automatically calculated nutrition.
-Next engineering priority: secure server API (never ship AI key to browser) with provider-independent multimodal adapter; photo upload and temporary processing with explicit retention policy; structured output validation (dish items, portion, nutrition, source, confidence, assumptions); user confirmation/correction; idempotent save; error handling; privacy, cost controls, integration tests. Deploy backend separately from static GitHub Pages. Do not use fabricated values or send private images to external AI services without consent and disclosed processing.
+## Какой документ читать
+| Задача | Документ | Нужен ли клон репозитория |
+|---|---|---|
+| Записать еду, вес, тренировку, оценку дня, перенос тренировки | `docs/DIARY.md` + `docs/DATA.md` | нет, достаточно доступа к Supabase |
+| Изменить сайт | `docs/SITE.md` | да |
+| Что делать дальше и известные проблемы | `docs/BACKLOG.md` | нет |
 
-## Architecture decision: ChatGPT-first input, FoodSport as read-only dashboard (2026-10-11)
-Owner prefers logging meals through ChatGPT conversation or an assistant agent, not via FoodSport forms. ChatGPT interprets free text/photos; an explicit confirmation writes structured meal records to a shared secure backend; FoodSport reads the same backend to visualize progress. The website is principally a dashboard. No copy-paste or duplicate entry should be required.
-Important: GitHub repository is for code and agent handoff ONLY; do not write real meals, photos, health records, credentials, or user-specific diary JSON into public GitHub. The current GitHub connector has no general secure backend write path and cannot make this chat automatically persist meals to the live website. Never claim end-to-end synchronization before backend and a ChatGPT-accessible authenticated connector/plugin are deployed and tested.
-See docs/CHAT_FIRST_ARCHITECTURE.md. Prioritize secure storage/API, then authenticated ChatGPT connector, then dashboard API reads; retire the localStorage diary once migration is safe. User approvals for changes and corrections are essential.
+Чтобы прочитать один файл без клонирования: `gh api repos/Karasuoshi/foodsport/contents/docs/DIARY.md -H "Accept: application/vnd.github.raw"`.
 
-## Product copywriting rule (2026-10-11)
-User's conversational instructions are design context, not UI copy. Never paste or closely paraphrase user messages as headings, banners, placeholders or product marketing. Write concise, natural, product-appropriate Russian. Do not clutter the public-facing dashboard with internal implementation notes, agent language or technical explanations. Site is a visualization layer, with ChatGPT as the intended meal intake interface. Until synchronization exists, show an accurate, understated empty state rather than fake chat/photo upload controls.
+## Жёсткие правила
+1. **Личные данные — только в Supabase.** Еду, вес, замеры, анализы, почту и UUID владельца не коммитить в репозиторий и не писать в логи. Личный контекст (цели, предпочтения) хранится в приватных материалах агента — в проекте Claude «FoodSport».
+2. **«Сохранено» говорить только после чтения строки обратно из базы.** Если записать не удалось — прямо сказать об этом.
+3. **«Сайт обновлён» говорить только после того, как деплой Pages прошёл успешно** (`gh run list -R Karasuoshi/foodsport -L 4`).
+4. **Владельца определять явно.** То, что в `auth.users` всего одна строка, не доказывает, кто владелец. Подробнее в `docs/DATA.md`.
+5. **Нужно явное согласие владельца** на изменение целей, постоянного расписания и шаблонов тренировок, а также медицинских данных. Предлагать изменения можно.
+6. **Здоровье:** без диагнозов, назначений и изменений лечения. Тревожные показатели — повод обратиться к врачу.
+7. **Сайт не пишет в базу.** Не добавлять на сайт формы и кнопки записи. Новые возможности ввода реализуются через агента.
 
-## Food diary completeness/backfill rule (2026-10-11)
-Every calendar day needs explicit diary confirmation; missing records are NOT evidence of fasting or zero calories. User may backfill meals one or several days later via ChatGPT; entries must be assigned to the actual meal date, not message timestamp. Site currently provides a rolling list of unconfirmed past 14 days, explicit day confirmation, and ChatGPT backfill prompt copy. These are browser-local only. The shared backend must persist day-level completeness status, missing-day backlog and source timestamps, expose them to both chat connector and website, and allow user corrections/reopening days. No automatic chat reminder is active unless a real scheduled automation and connector are configured.
+## Как работать с репозиторием
+- Коммитить прямо в `main` можно, ревью не требуется. Workflow `Verify FoodSport` гоняет TypeScript, тесты и сборку, `Publish FoodSport to GitHub Pages` выкладывает сайт.
+- Перед коммитом запусти `npm test`, если среда позволяет. Если нет, проверяй через CI: запушь в ветку, запусти `gh workflow run verify.yml --ref <ветка>` и только после зелёного прогона вливай в `main`.
+- Коммит включает код, тесты и правку нужного документа из `docs/`. Устаревшее удаляй, а не помечай как «историческое».
+- Документы короткие: факты и правила, без пересказа переписки.
 
-
-## Supabase integration update (2026-10-15)
-- Live Supabase project: `kzyykhjjpalrhprcttow` (eu-central-1), free tier; frontend is still static Next.js on GitHub Pages.
-- Five RLS-protected public tables: `food_entries`, `weights`, `trainings`, `day_reviews`, `plan_items`. Each has `user_id` bound to `auth.users`; authenticated users must only access their own rows.
-- `app/CloudAccount.tsx`: email/password login, session persistence and token refresh, Supabase REST calls. Sign-in UI is hidden when session exists.
-- `app/useCloudStored.ts`: provisional browser-local to Supabase migration and synchronization for five journals. Workout templates and schedule remain code-based in `lib/workouts.ts` / `app/WorkoutPlanner.tsx`.
-- **Previous statements in this file describing the site as localStorage-only are historical and superseded by this update, but production sync is NOT YET VERIFIED.**
-- Known issue: `day_reviews` has composite primary key `(user_id,date)`, while the generic upsert does not set `on_conflict=user_id,date`. Test and fix. Also test new-device sync, duplicate seed IDs, token refresh, concurrent edits, and failed writes before claiming production-ready sync.
-- GitHub is for code, documentation and agent coordination, NOT the ongoing food diary. New agents should read this file, `docs/FOODSPORT_CONTEXT.md`, `.agents/skills/foodsport/SKILL.md`, and relevant source files.
-- Agents with Supabase access must verify the correct authenticated owner's `user_id` before inserting any journal rows. Never guess owner IDs, disable RLS, expose service-role keys, or commit credentials.
-- Before each edit fetch current file SHA. Prefer branches/PRs for substantial work; run `npm test`, `npm run build`, and verify GitHub Pages deployment. Never claim deploy or sync is successful solely because a commit succeeded.
-- Other agents need separately authorized GitHub and Supabase connections. Repository documentation does not grant permissions.
-
-## Cloud hardening handoff (2026-10-15, follow-up)
-Read docs/CLOUD_HANDOFF.md before diary writes or sync changes. This supersedes the outdated GitHub-diary write directions in .agents/skills/foodsport/SKILL.md. Journal data belongs in Supabase only. Direct ChatGPT writes use the connected Supabase tool after explicit owner-account verification; a sole auth.users row is not identity proof. day_reviews now supports score/comment. Never claim two-device validation based on SQL or unit tests.
+## Решения
+- 2026-10-11 — продукт FoodSport, интерфейс на русском, сайт на GitHub Pages (статический Next.js).
+- 2026-10-15 — хранилище Supabase, проект `kzyykhjjpalrhprcttow`, RLS по `user_id`.
+- 2026-10-20 — ведущий агент Claude (раньше был ChatGPT). Сайт только для просмотра. Репозиторий — ТЗ и код без личных данных.

@@ -1,108 +1,117 @@
-*{box-sizing:border-box}body{margin:0;background:#f5f7f6;color:#172b30;font-family:Arial,Helvetica,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}button:disabled{opacity:.5;cursor:default}.shell{display:flex;min-height:100vh}.sidebar{width:246px;background:#102d32;color:#e9f3f2;padding:32px 17px;display:flex;flex-direction:column;flex-shrink:0}.brand{display:flex;align-items:center;gap:12px;font-size:22px;font-weight:800;padding:0 10px 40px}.brand small{display:block;font-size:9px;letter-spacing:2.3px;font-weight:500;color:#9ab7b8;margin-top:5px}.brandicon{width:40px;height:40px;background:#2d9488;display:grid;place-items:center;border-radius:12px}.nav{display:grid;gap:7px}.navitem{display:flex;align-items:center;gap:14px;padding:14px 16px;color:#a9c3c3;border:0;background:transparent;border-radius:11px;text-align:left}.navitem:hover,.navitem.active{background:#255057;color:white}.sidefoot{margin-top:auto;color:#b6d1d0;font-size:12px;padding:16px 10px;line-height:2}.sidefoot small{display:block;color:#789c9c}.dot{display:inline-block;width:7px;height:7px;background:#65c9a8;border-radius:50%;margin-right:6px}.main{flex:1;min-width:0}.top{padding:32px 48px 23px;background:white;border-bottom:1px solid #e7eded;display:flex;align-items:center;justify-content:space-between;gap:20px}.eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;color:#168579}.top h1{font-size:29px;margin:8px 0 0}.datebar{display:flex;align-items:center;border:1px solid #e0e8e7;border-radius:12px;padding:6px;background:#fff}.datebar button{border:0;background:transparent;padding:6px;color:#476368}.datebar input{border:0;padding:6px;color:#344f53}.content{padding:30px 48px;max-width:1500px;margin:auto}.hero{background:linear-gradient(115deg,#153d41,#287e78);border-radius:18px;color:white;padding:36px 40px;display:flex;justify-content:space-between;overflow:hidden;min-height:235px}.hero .eyebrow{color:#8ee2cd}.hero h2{font-size:29px;line-height:1.25;margin:12px 0}.hero p{color:#c8e3e0;margin:0 0 20px}.heroicon{align-self:center;color:#7dc8bb;opacity:.5;margin-right:40px}.primary{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;background:#198c7d;color:white;padding:11px 16px;border-radius:10px;font-weight:700}.hero .primary{background:white;color:#17675f}.primary:hover{filter:brightness(.94)}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin:22px 0}.stat,.panel{background:white;border:1px solid #e5ebea;border-radius:16px;padding:23px}.statvalue{font-size:28px;font-weight:800;margin:13px 0 5px;letter-spacing:-1px}.stat small,.muted,.hint{color:#71888c;font-size:13px}.track{height:6px;border-radius:10px;background:#e6efed;margin-top:17px;overflow:hidden}.track div{height:100%;background:#27a393;border-radius:10px}.twocol{display:grid;grid-template-columns:1fr 1fr;gap:20px}.panel h3{font-size:18px;margin:0 0 18px}.sectionhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:16px}.sectionhead h3{margin:0}.link{border:0;background:none;color:#198c7d;font-weight:700}.lineitem,.foodrow{display:flex;align-items:center;justify-content:space-between;padding:15px 0;border-top:1px solid #edf1f0;gap:10px}.lineitem:first-of-type,.foodrow:first-of-type{border-top:0}.lineitem small,.foodrow small{display:block;font-size:12px;color:#8a9b9c;margin-top:5px}.foodrow strong{font-size:14px}.rowactions{display:flex;align-items:center;gap:14px}.rowactions button,.lineitem button,.sectionhead>button:not(.primary){border:0;background:transparent;color:#68888b}.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:170px;color:#9aadae;text-align:center;font-size:14px}.empty p{max-width:260px}.hint{margin-top:16px}.notice{background:#eaf5f2;border:1px solid #d3e8e2;color:#336c66;padding:16px;border-radius:11px;font-size:13px;margin-top:20px;line-height:1.5}label{display:grid;gap:8px;font-size:13px;font-weight:700;margin:16px 0}input,select,textarea{padding:12px;border:1px solid #dce5e3;border-radius:9px;background:white;outline-color:#198c7d;max-width:100%;width:100%;color:#203a3e}.panel .primary{margin-top:6px}.overlay{position:fixed;inset:0;background:#0b2428aa;display:grid;place-items:center;padding:20px;z-index:10}.modal{background:white;border-radius:18px;width:min(100%,510px);padding:27px;max-height:95vh;overflow:auto;box-shadow:0 30px 80px #001a1a40}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}.preview{background:#f0f6f4;padding:14px;border-radius:10px;margin:16px 0}.wide{width:100%}.graph svg{width:100%;height:auto}.graphlabels{display:flex;justify-content:space-between;color:#809697;font-size:12px}.weightone{font-size:35px;font-weight:800;padding:45px 0;text-align:center}.weightone small{display:block;font-size:12px;color:#809697;margin-top:10px}@media(max-width:1050px){.sidebar{width:210px}.content{padding:24px}.top{padding:24px}.stats{grid-template-columns:repeat(2,1fr)}}@media(max-width:700px){.shell{display:block}.sidebar{width:100%;padding:14px;position:sticky;top:0;z-index:2}.brand{padding:0 0 12px;font-size:18px}.brandicon{width:31px;height:31px}.nav{display:flex;overflow-x:auto;gap:4px}.navitem{padding:10px;white-space:nowrap;font-size:12px;gap:6px}.navitem svg{width:15px}.sidefoot{display:none}.top{padding:20px;align-items:flex-start;flex-wrap:wrap}.top h1{font-size:24px}.content{padding:18px}.hero{padding:24px;min-height:0}.hero h2{font-size:23px}.heroicon{display:none}.stats{gap:9px}.stat,.panel{padding:17px}.statvalue{font-size:22px}.twocol{grid-template-columns:1fr}.foodrow{align-items:flex-start}.rowactions{gap:7px}.rowactions strong{white-space:nowrap}.datebar{width:100%;justify-content:space-between}}
+/* FoodSport dashboard. Only classes used by app/*.tsx live here. */
+* { box-sizing: border-box; }
+body { margin: 0; background: #f5f7f6; color: #172b30; font-family: Arial, Helvetica, sans-serif; }
+button, input { font: inherit; }
+button { cursor: pointer; }
+button:disabled { opacity: .5; cursor: default; }
 
-.exportbar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;background:#eaf5f2;color:#356d65;border-radius:12px;font-size:12px;margin-bottom:20px}.exportbar button{border:1px solid #a8d3c7;background:#fff;color:#176f61;border-radius:8px;padding:8px 12px;font-weight:700;white-space:nowrap}@media(max-width:700px){.exportbar{align-items:flex-start;flex-direction:column}}
+/* Layout */
+.journalapp { min-height: 100vh; }
+.journalheader { display: flex; align-items: center; background: #fff; border-bottom: 1px solid #e5e9e8; padding: 20px 5%; }
+.journalbrand { display: flex; align-items: center; gap: 12px; font-size: 21px; color: #167c6e; }
+.journalbrand span { font-size: 13px; color: #8c9a9e; }
+.journalmain { max-width: 1240px; margin: auto; padding: 30px 24px; }
+.journalheading { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.journalheading h1 { font-size: 29px; margin: 0; }
+.journalheading p { color: #839398; font-size: 13px; }
+.journalgrid { display: grid; grid-template-columns: minmax(0, 2fr) minmax(280px, 1fr); gap: 18px; }
+.journalprimary, .journalside { display: grid; gap: 18px; align-content: start; min-width: 0; }
+.journalpanel { background: #fff; border: 1px solid #e5eaea; border-radius: 12px; padding: 22px; }
+.journalpanelhead { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 17px; }
+.journalpanelhead h2 { font-size: 18px; margin: 0; }
+.journalpanelhead small { display: block; font-size: 12px; color: #899a9f; margin-top: 5px; }
+.journalempty, .journalsub { color: #8a999e; font-size: 13px; line-height: 1.5; }
 
-.plancheck{display:flex;align-items:center;gap:12px;margin:0;flex:1;font-weight:500}.plancheck input{width:19px;height:19px;flex-shrink:0;accent-color:#198c7d}.plancheck small{margin:0 0 4px}.planadd{display:grid;grid-template-columns:minmax(0,2fr) minmax(140px,1fr) auto;gap:9px;margin-top:20px;align-items:center}.planadd input{min-width:0}.planadd .primary{margin:0}@media(max-width:700px){.planadd{grid-template-columns:1fr}.plancheck{font-size:13px}}
+/* Date navigation and sync state */
+.datebar { display: flex; align-items: center; gap: 4px; border: 1px solid #e0e8e7; border-radius: 12px; padding: 6px; background: #fff; }
+.datebar button { border: 0; background: transparent; padding: 6px; color: #476368; }
+.datebar span { padding: 0 6px; color: #344f53; white-space: nowrap; }
+.datebar .datetoday { color: #167b6d; font-size: 12px; font-weight: 700; }
+.syncnote { background: #fff6e7; color: #896333; border-radius: 9px; padding: 10px 12px; font-size: 12px; }
 
-.foodinbox{margin-bottom:20px}.foodinbox textarea{width:100%;min-height:90px;resize:vertical}.inboxactions{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:12px}.photopick{display:inline-flex;align-items:center;gap:7px;cursor:pointer;background:#eef5f3;border:1px solid #d7e8e3;padding:11px 14px;border-radius:10px;margin:0}.photopick input{display:none}.inboxwarning{font-size:12px;line-height:1.5;color:#896333;background:#fff6e7;padding:11px;border-radius:9px;margin-top:15px}.photopreview{display:flex;align-items:center;gap:12px;margin-top:12px;flex-wrap:wrap;font-size:12px}.photopreview img{width:84px;height:84px;object-fit:cover;border-radius:9px}.photopreview button{border:0;background:transparent;color:#a45a42}@media(max-width:700px){.inboxactions{flex-wrap:wrap}}
+/* Day metrics and nutrition */
+.journalmetrics { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 22px 0; }
+.journalmetrics > div { background: #fff; border: 1px solid #e5eaea; border-radius: 12px; padding: 20px; }
+.journalmetrics small { display: block; color: #839398; font-size: 12px; }
+.journalmetrics strong { display: block; font-size: 28px; margin-top: 10px; }
+.journalmetrics strong span { font-size: 12px; color: #849398; font-weight: 400; }
+.mealstable { overflow-x: auto; }
+.mealstablehead, .mealrow, .mealtotal { display: grid; grid-template-columns: minmax(0, 1fr) repeat(4, 58px); gap: 8px; align-items: center; min-width: 310px; }
+.mealstablehead { color: #8c9b9e; font-size: 11px; padding: 10px 0; border-bottom: 1px solid #e8eeee; }
+.mealrow { padding: 15px 0; border-bottom: 1px solid #edf1f0; }
+.mealrow strong { font-size: 14px; }
+.mealrow small { display: block; color: #8b9b9e; font-size: 12px; margin-top: 5px; }
+.mealrow b, .mealtotal b { font-size: 13px; }
+.mealtotal { padding-top: 16px; }
+.dayscore { border-top: 1px solid #e8eeee; margin: 17px 0 0; padding-top: 15px; font-size: 14px; line-height: 1.5; }
 
-.dashboardintro{display:flex;justify-content:space-between;align-items:center;gap:24px;background:linear-gradient(115deg,#e8f5f1,#f8fbfa);margin-bottom:22px}.dashboardintro h3{font-size:22px;margin:8px 0 12px}.dashboardintro p{max-width:640px;line-height:1.6;color:#385e5c;margin:0 0 12px}.dashboardintro small{font-size:12px;color:#748e8b}.dashboardillustration{color:#24897c;opacity:.55;padding:22px}@media(max-width:700px){.dashboardillustration{display:none}}
+/* Weight */
+.journalweight { font-size: 40px; font-weight: 800; }
+.journalweight span { font-size: 14px; font-weight: 400; color: #849599; }
+.journaldelta { font-size: 13px; font-weight: 700; color: #198578; }
+.graph svg { width: 100%; height: auto; }
+.graphlabels { display: flex; justify-content: space-between; color: #809697; font-size: 12px; }
+.weightone { font-size: 35px; font-weight: 800; padding: 45px 0; text-align: center; }
+.weightone small { display: block; font-size: 12px; color: #809697; margin-top: 10px; }
+.empty { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 170px; color: #9aadae; text-align: center; font-size: 14px; }
 
-.reviewactions{display:flex;flex-wrap:wrap;gap:9px;margin:15px 0}.reviewactions button,.reviewdays button{padding:10px 13px;border:1px solid #d4e5e0;border-radius:9px;background:#fff;cursor:pointer}.reviewactions .primary{background:#168678;color:#fff;border-color:#168678}.reviewdays{display:flex;gap:8px;flex-wrap:wrap}.reviewdays button{font-size:12px}.reviewnotice{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:18px}.reviewnotice strong{font-size:14px}@media(max-width:700px){.reviewnotice{flex-direction:column;align-items:flex-start}}
+/* Unclosed days */
+.journalcount { color: #198879; background: #eff8f5; padding: 5px 9px; border-radius: 7px; font-size: 12px; }
+.journalmissing { display: flex; justify-content: space-between; width: 100%; padding: 13px 0; border: 0; border-bottom: 1px solid #edf1f0; background: #fff; text-align: left; font-size: 13px; }
+.journalmissing strong { color: #198879; }
 
-.journalapp{min-height:100vh;background:#f5f7f6}
+/* Workouts */
+.workoutweek { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 6px; }
+.workoutday { display: flex; flex-direction: column; align-items: center; gap: 6px; border: 1px solid #e4ebea; border-radius: 9px; background: #fff; padding: 10px 2px; min-width: 0; min-height: 88px; }
+.workoutday.active { background: #edf8f4; border-color: #168b7a; }
+.workoutday span, .workoutday small { font-size: 10px; color: #829397; }
+.workoutday b { font-size: 18px; }
+.workoutday small { overflow-wrap: anywhere; text-align: center; }
+.workoutdetail { padding: 20px 0 12px; }
+.workoutdetail strong { font-size: 17px; }
+.workoutdetail p { color: #829397; font-size: 12px; line-height: 1.5; }
+.workoutopen { display: inline-flex; align-items: center; justify-content: center; gap: 7px; width: 100%; border: 1px solid #d9e9e3; background: #eff8f4; color: #167b6d; border-radius: 8px; padding: 10px; font-size: 12px; font-weight: 700; }
+.workoutsteps { padding-top: 10px; }
+.workoutstep { padding: 14px 0; border-bottom: 1px solid #e8eeee; }
+.workoutstepheading { display: flex; justify-content: space-between; gap: 12px; }
+.workoutstepheading strong { font-size: 13px; }
+.workoutstepheading small { color: #87999a; font-size: 12px; }
+.completedtraining p { line-height: 1.6; color: #526b67; }
+.completedtraining + .completedtraining { margin-top: 16px; }
 
-.journalheader{display:flex;align-items:center;justify-content:space-between;background:white;border-bottom:1px solid #e5e9e8;padding:20px 5%}
-.journalbrand{display:flex;align-items:center;gap:12px;font-size:21px;color:#167c6e}
-.journalbrand span{font-size:13px;color:#8c9a9e;font-weight:400}
-.journalexport{background:none;border:0;color:#84979a;font-size:12px}
-.journalmain{max-width:1240px;margin:auto;padding:30px 24px}
-.journalheading{display:flex;justify-content:space-between;align-items:center;gap:20px}
-.journalheading h1{font-size:29px;margin:0}
-.journalheading p{color:#839398;font-size:13px}
-.journalmetrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:22px 0}
-.journalmetrics>div{background:white;border:1px solid #e5eaea;border-radius:12px;padding:20px}
-.journalmetrics small{display:block;color:#839398;font-size:12px}
-.journalmetrics strong{display:block;font-size:28px;margin-top:10px}
-.journalmetrics strong span{font-size:12px;color:#849398;font-weight:400}
-.journalgrid{display:grid;grid-template-columns:minmax(0,2fr) minmax(280px,1fr);gap:18px}
-.journalprimary,.journalside{display:grid;gap:18px;align-content:start;min-width:0}
-.journalpanel{background:white;border:1px solid #e5eaea;border-radius:12px;padding:22px}
-.journalpanelhead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:17px}
-.journalpanelhead h2{font-size:18px;margin:0}
-.journalpanelhead small{display:block;font-size:12px;color:#899a9f;margin-top:5px}
-.journaladd{display:inline-flex;align-items:center;gap:5px;border:1px solid #d4e8e0;border-radius:8px;padding:9px 12px;background:#edf8f3;color:#177a6b;font-weight:700;font-size:12px}
+/* Week summary */
+.weeksummary { display: flex; flex-direction: column; gap: 8px; }
+.weeksummaryrow { display: grid; grid-template-columns: 90px minmax(0, 1.2fr) minmax(0, 1fr); gap: 12px; align-items: center; text-align: left; padding: 14px; border: 1px solid #e7eeee; border-radius: 10px; background: #fff; color: #254440; }
+.weeksummaryrow.selected { border-color: #208a7a; background: #eff9f5; }
+.weeksummaryrow strong { font-size: 13px; }
+.weeksummaryrow span { font-size: 13px; line-height: 1.5; }
+.weeksummaryrow small { display: block; color: #637d79; font-size: 11px; }
 
-.mealstablehead,.mealrow,.mealtotal{display:grid;grid-template-columns:minmax(0,1fr) repeat(4, 58px);gap:8px;align-items:center}
-.mealstablehead{color:#8c9b9e;font-size:11px;padding:10px 0;border-bottom:1px solid #e8eeee}
-.mealrow{padding:15px 0;border-bottom:1px solid #edf1f0}
-.mealrow strong{font-size:14px}
-.mealrow small{display:block;color:#8b9b9e;font-size:12px;margin-top:5px}
-.mealrow b,.mealtotal b{font-size:13px}
-.mealbuttons{display:flex;gap:3px}
-.mealbuttons button,.journalactivity button{border:0;background:none;color:#8d9da0;padding:4px}
-.mealtotal{padding-top:16px}
-.journalempty,.journalsub{color:#8a999e;font-size:13px;line-height:1.5}
-.journalcheck{border-top:1px solid #e8eeee;margin-top:17px;padding-top:15px;display:flex;justify-content:space-between;align-items:center;gap:12px;font-size:12px;color:#829398}
-.journalcheck button{border:1px solid #d9e9e2;background:white;color:#18796a;padding:9px 12px;border-radius:7px}
-.journalactivity{display:flex;align-items:center;gap:13px;padding:12px 0}
-.journalactivity>svg{color:#188776}
-.journalactivity>div{flex:1}
-.journalactivity small{display:block;color:#8b999e;font-size:12px;margin-top:5px}
-.journalform{border-top:1px solid #e8eeee;padding-top:12px}
-.journalform label{margin:10px 0}
+/* Sign-in */
+.login { max-width: 460px; margin: 40px auto; }
+.login h2 { margin: 0 0 6px; font-size: 20px; }
+.login form { display: grid; gap: 10px; margin-top: 16px; }
+.login input { padding: 12px; border: 1px solid #dce5e3; border-radius: 9px; outline-color: #198c7d; }
+.login button { border: 0; border-radius: 9px; background: #198879; color: #fff; padding: 12px; font-weight: 700; }
+.loginerror { color: #a45a42; font-size: 13px; }
 
-.journalweek{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
-.journalday{display:flex;flex-direction:column;align-items:center;gap:8px;min-width:0;border:1px solid #e7eeee;border-radius:9px;background:white;padding:11px 3px}
-.journalday.selected{border-color:#208a7a;background:#eff9f5}
-.journalday strong,.journalday small{font-size:10px;color:#758f8c;text-align:center;overflow-wrap:anywhere}
-.journalday span{font-size:19px;font-weight:700}
-.journalweight{font-size:40px;font-weight:800}
-.journalweight span{font-size:14px;font-weight:400;color:#849599}
-.journaldelta{font-size:13px;font-weight:700;color:#198578}
-.journalweightform{display:flex;gap:8px;margin:16px 0 10px}
-.journalweightform input{min-width:0}
-.journalweightform button{background:#198879;border:0;border-radius:8px;color:white;padding:0 12px;font-size:12px}
-.journalcount{color:#198879;background:#eff8f5;padding:5px 9px;border-radius:7px;font-size:12px}
-.journalmissing{display:flex;justify-content:space-between;width:100%;padding:13px 0;border:0;border-bottom:1px solid #edf1f0;background:white;text-align:left;font-size:13px}
-.journalmissing strong{color:#198879}
-.journalfooter{text-align:center;margin:28px 0;color:#9ba8ac;font-size:11px}
-@media(max-width:900px){.journalgrid{grid-template-columns:1fr}.journalside{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media(max-width:650px){.journalheader{padding:18px}.journalmain{padding:20px 12px}.journalheading{flex-direction:column;align-items:stretch}.journalmetrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.journalmetrics>div,.journalpanel{padding:15px}.journalmetrics strong{font-size:23px}.journalside{grid-template-columns:1fr}.mealstablehead,.mealrow,.mealtotal{grid-template-columns:minmax(110px,1fr) repeat(4, 44px);gap:4px}.mealbuttons button{padding:2px}.journalweek{gap:3px}.journalday{padding:9px 1px}.journalcheck{align-items:flex-start;flex-direction:column}}
-
-.workoutweek{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
-.workoutday{display:flex;flex-direction:column;align-items:center;gap:6px;border:1px solid #e4ebea;border-radius:9px;background:#fff;padding:10px 2px;min-width:0;min-height:88px}
-.workoutday.active{background:#edf8f4;border-color:#168b7a}
-.workoutday span,.workoutday small{font-size:10px;color:#829397}
-.workoutday b{font-size:18px}
-.workoutday small{overflow-wrap:anywhere;text-align:center}
-.workoutday svg{color:#168b7a}
-.workoutdetail{display:flex;align-items:start;justify-content:space-between;gap:12px;padding:20px 0 12px}
-.workoutdetail strong{font-size:17px}
-.workoutdetail p,.workoutnote,.workouteditor p{color:#829397;font-size:12px;line-height:1.5}
-.workoutdetail small{color:#168b7a;font-size:12px}
-.workoutedit,.workoutopen{display:inline-flex;align-items:center;justify-content:center;gap:7px;border:1px solid #d9e9e3;background:#eff8f4;color:#167b6d;border-radius:8px;padding:10px;font-size:12px;white-space:nowrap}
-.workoutopen{width:100%;font-weight:700}
-.workouteditor{padding:14px;border:1px solid #e1e9e7;border-radius:10px;background:#f8fbfa;display:grid;gap:12px}
-.workouteditor label{display:grid;gap:7px;font-size:12px}
-.workouteditor select{width:100%;padding:9px;border:1px solid #dce7e4;border-radius:7px;background:white}
-.workouteditactions{display:flex;gap:10px;align-items:center}
-.workouteditactions>button:last-child{border:0;background:none;color:#849498}
-.workoutsteps{padding-top:10px}
-.workoutstep{padding:14px 0;border-bottom:1px solid #e8eeee}
-.workoutstepheading{display:flex;justify-content:space-between;gap:12px}
-.workoutstepheading strong{font-size:13px}
-.workoutstepheading small{color:#87999a;font-size:12px}
-.workoutsets{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-.workoutset{display:flex;align-items:center;gap:5px}
-.workoutset button{width:32px;height:32px;border-radius:7px;border:1px solid #d8e4e0;background:#fff;color:#718c86}
-.workoutset button.done{background:#168b7a;color:white;border-color:#168b7a}
-.workoutset input{width:64px;padding:7px;border:1px solid #dbe7e4;border-radius:7px;font-size:12px}
-.workoutfinish{width:100%;margin-top:16px;background:#168b7a;color:white;border:0;border-radius:9px;padding:13px;font-weight:700}
-.workoutfinish.finished{background:#e6f5ee;color:#167b6d}
-.workoutnote{margin:15px 0 0}
-@media(max-width:650px){.workoutweek{gap:3px}.workoutday{padding:9px 1px}.workoutday small{font-size:9px}.workoutdetail{flex-wrap:wrap}.workoutstepheading{flex-wrap:wrap}}
-
-.weeksummary{display:flex;flex-direction:column;gap:8px}.weeksummaryrow{display:grid;grid-template-columns:90px minmax(0,1.2fr) minmax(0,1fr);gap:12px;align-items:center;text-align:left;padding:14px;border:1px solid #e7eeee;border-radius:10px;background:#fff;color:#254440;font:inherit}.weeksummaryrow.selected{border-color:#208a7a;background:#eff9f5}.weeksummaryrow strong{font-size:13px}.weeksummaryrow span{font-size:13px;line-height:1.5}.weeksummaryrow small{display:block;color:#637d79;font-size:11px}.completedtraining p{line-height:1.6;color:#526b67}.completedtraining+.completedtraining{margin-top:16px}@media(max-width:650px){.weeksummaryrow{grid-template-columns:75px minmax(0,1fr);gap:8px}.weeksummaryrow>span:last-child{grid-column:2}}
-
-.mealstable{overflow-x:auto}.mealstablehead,.mealrow,.mealtotal{min-width:310px}
+@media (max-width: 900px) {
+  .journalgrid { grid-template-columns: 1fr; }
+  .journalside { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 650px) {
+  .journalheader { padding: 18px; }
+  .journalmain { padding: 20px 12px; }
+  .journalheading { flex-direction: column; align-items: stretch; }
+  .datebar { justify-content: space-between; }
+  .journalmetrics { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .journalmetrics > div, .journalpanel { padding: 15px; }
+  .journalmetrics strong { font-size: 23px; }
+  .journalside { grid-template-columns: 1fr; }
+  .mealstablehead, .mealrow, .mealtotal { grid-template-columns: minmax(110px, 1fr) repeat(4, 44px); gap: 4px; }
+  .workoutweek { gap: 3px; }
+  .workoutday { padding: 9px 1px; }
+  .workoutday small { font-size: 9px; }
+  .weeksummaryrow { grid-template-columns: 75px minmax(0, 1fr); gap: 8px; }
+  .weeksummaryrow > span:last-child { grid-column: 2; }
+}

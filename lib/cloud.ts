@@ -1,20 +1,61 @@
-export type Item = {id?: string; date?: string; updatedAt?: string};
-export const tables: Record<string,string> = {'fs-food-v1':'food_entries','fs-weights-v1':'weights','fs-training-v1':'trainings','fs-day-reviews-v1':'day_reviews','fs-plan-2026-10-12-v1':'plan_items'};
-const fields: Record<string,string[]> = {food_entries:['id','date','name','grams','kcal100','protein100','fat100','carbs100'],weights:['id','date','value'],trainings:['id','date','type','minutes','notes'],day_reviews:['date','status','updatedAt','score','comment'],plan_items:['id','date','title','done']};
-export const idOf = (x: Item) => String(x.id ?? x.date);
-export const cacheKey = (key:string,user:string) => `fs-cloud-v2:${user}:${key}`;
-export const conflictQuery = (table:string) => table === 'day_reviews' ? '?on_conflict=user_id,date' : '?on_conflict=id';
-export function toDb(x:Item,table:string,user_id:string) {
- const out:Record<string,unknown>={user_id};
- for(const f of fields[table]) if((x as Record<string,unknown>)[f]!==undefined) out[f==='updatedAt'?'updated_at':f]=(x as Record<string,unknown>)[f];
- return out;
+// Mapping Supabase rows to the dashboard snapshot. Pure functions, unit-tested.
+import type { FoodEntry } from "./food";
+import type { PlanItem, Training } from "./training";
+
+export type Weight = { id: string; date: string; value: number };
+export type DayReview = { date: string; status: "complete" | "no-data"; updatedAt?: string; score?: number | null; comment?: string | null };
+
+export const TABLES = ["food_entries", "weights", "trainings", "day_reviews", "plan_items"] as const;
+export type Table = (typeof TABLES)[number];
+
+const FIELDS: Record<Table, string[]> = {
+  food_entries: ["id", "date", "name", "grams", "kcal100", "protein100", "fat100", "carbs100", "createdAt"],
+  weights: ["id", "date", "value"],
+  trainings: ["id", "date", "type", "minutes", "notes", "createdAt"],
+  day_reviews: ["date", "status", "updatedAt", "score", "comment"],
+  plan_items: ["id", "date", "title", "done"],
+};
+const NUMERIC = new Set(["grams", "kcal100", "protein100", "fat100", "carbs100", "value", "minutes", "score"]);
+const column = (field: string) => field.replace(/[A-Z]/g, (c) => "_" + c.toLowerCase());
+
+/** Copies only known fields; user_id and unknown columns never reach the UI. */
+export function fromDb(row: Record<string, unknown>, table: Table): Record<string, unknown> {
+  const out: Record<string, unknown> = {};
+  for (const f of FIELDS[table]) {
+    const v = row[column(f)];
+    if (v === undefined) continue;
+    if (v === null) { if (table === "day_reviews") out[f] = null; continue; }
+    out[f] = NUMERIC.has(f) && typeof v === "string" ? Number(v) : v;
+  }
+  return out;
 }
-export function fromDb(x:Record<string,unknown>,table:string):Item {
- const out:Record<string,unknown>={};
- for(const f of fields[table]) {const v=x[f==='updatedAt'?'updated_at':f];if(v!==undefined)out[f]=v;}
- return out;
+
+export type Snapshot = {
+  food: FoodEntry[];
+  weights: Weight[];
+  trainings: Training[];
+  reviews: DayReview[];
+  plans: PlanItem[];
+  syncedAt: string;
+};
+
+// Stable display order: by date, then creation time when the column exists, then id.
+const byTime = (a: Record<string, unknown>, b: Record<string, unknown>) =>
+  String(a.date).localeCompare(String(b.date)) ||
+  String(a.createdAt ?? "").localeCompare(String(b.createdAt ?? "")) ||
+  String(a.id ?? "").localeCompare(String(b.id ?? ""));
+
+export function toSnapshot(raw: Record<Table, Record<string, unknown>[]>, syncedAt: string): Snapshot {
+  const rows = (t: Table) => (raw[t] ?? []).map((r) => fromDb(r, t)).sort(byTime);
+  return {
+    food: rows("food_entries") as unknown as FoodEntry[],
+    weights: rows("weights") as unknown as Weight[],
+    trainings: rows("trainings") as unknown as Training[],
+    reviews: rows("day_reviews") as unknown as DayReview[],
+    plans: rows("plan_items") as unknown as PlanItem[],
+    syncedAt,
+  };
 }
-export function changes<T extends Item>(old:T[],next:T[]) {
- const before=new Map(old.map(x=>[idOf(x),x]));const after=new Set(next.map(idOf));
- return {removed:old.filter(x=>!after.has(idOf(x))).map(idOf),changed:next.filter(x=>JSON.stringify(before.get(idOf(x)))!==JSON.stringify(x))};
-}
+
+/** Last good snapshot per account, shown instantly and when the network fails. */
+export const cacheKey = (user: string) => `fs-cloud-v3:${user}`;

@@ -1,106 +1,185 @@
 "use client";
-import {useEffect,useMemo,useState} from "react";
-import {Activity,BarChart3,BookOpen,CalendarDays,ChevronLeft,ChevronRight,Dumbbell,HeartPulse,Plus,Scale,Trash2,UtensilsCrossed,X,Pencil,Check} from "lucide-react";
-import {FoodEntry,macros,total,round,today,validFood} from "../lib/food";
-import {buildExport,downloadJSON} from "../lib/export";
+// Read-only dashboard. Every number comes from Supabase via useJournal;
+// agents write the journal, the site only displays it (see AGENTS.md).
+import { useMemo, useState, type ReactNode } from "react";
+import { Activity, BookOpen, ChevronLeft, ChevronRight, Scale } from "lucide-react";
+import { macros, round, today, total } from "../lib/food";
+import { scheduleFromPlans, trainingDay } from "../lib/training";
+import type { Weight } from "../lib/cloud";
+import useJournal from "./useJournal";
+import Login from "./Login";
 import WorkoutPlanner from "./WorkoutPlanner";
-import TrainingJournal,{TrainingSummary} from "./TrainingJournal";
-import {Training,PlanItem,scheduleFromPlans,trainingDay} from "../lib/training";
-import CloudAccount from "./CloudAccount";
-import useCloudStored from "./useCloudStored";
-type Tab="overview"|"food"|"weight"|"training"|"health"|"plan";
-type Weight={id:string;date:string;value:number};
-type DayReview={date:string;status:"complete"|"no-data";updatedAt:string;score?:number|null;comment?:string|null};
-const dayShift=(value:string,delta:number)=>{const d=new Date(value+"T12:00:00");d.setDate(d.getDate()+delta);return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-")};
-const WEEK_START="2026-10-12";
-const starterPlan:PlanItem[]=[
-{id:"mon",date:"2026-10-12",title:"Взвешивание утром; записать питание за день",done:false},
-{id:"tue",date:"2026-10-13",title:"Ходьба 30–40 минут в комфортном темпе",done:false},
-{id:"wed",date:"2026-10-14",title:"Тренировка по самочувствию 30 минут; внести в журнал",done:false},
-{id:"thu",date:"2026-10-15",title:"Проверить КБЖУ и размеры порций в дневнике",done:false},
-{id:"fri",date:"2026-10-16",title:"Ходьба 30–40 минут в комфортном темпе",done:false},
-{id:"sat",date:"2026-10-17",title:"Активность на выбор; записать длительность",done:false},
-{id:"sun",date:"2026-10-18",title:"Недельный обзор веса, питания и тренировок",done:false}
-];
-const october12Food:FoodEntry[]=[
-{id:"chat-2026-10-12-breakfast",date:"2026-10-12",name:"Завтрак: творог 5%, бутерброды с куриным карпаччо, сыром и авокадо, хлеб с маслом",grams:100,kcal100:685,protein100:57,fat100:37,carbs100:33},
-{id:"chat-2026-10-12-soup",date:"2026-10-12",name:"Обед: домашние щи с рёбрами и курицей (~500 г)",grams:500,kcal100:70,protein100:5.4,fat100:4,carbs100:3},
-{id:"chat-2026-10-12-pie",date:"2026-10-12",name:"Печёный пирожок со сгущёнкой",grams:100,kcal100:310,protein100:7,fat100:9,carbs100:51},
-{id:"chat-2026-10-12-dinner",date:"2026-10-12",name:"Ужин: курица с ананасами в соусе и рис",grams:100,kcal100:500,protein100:33,fat100:16,carbs100:66},
-{id:"chat-2026-10-12-night",date:"2026-10-12",name:"Ночной перекус: молоко ~300 мл и 1 ч. л. мёда",grams:100,kcal100:178,protein100:9,fat100:8,carbs100:18}
-];
-const october13Food:FoodEntry[]=[
-{id:"chat-2026-10-13-bread",date:"2026-10-13",name:"Домашний хлеб, 2 кусочка по 20 г",grams:40,kcal100:250,protein100:7.5,fat100:2.5,carbs100:50},
-{id:"chat-2026-10-13-sausage",date:"2026-10-13",name:"Колбаса",grams:15,kcal100:300,protein100:13.33,fat100:26.67,carbs100:1.33},
-{id:"chat-2026-10-13-cheese",date:"2026-10-13",name:"Сыр",grams:20,kcal100:350,protein100:25,fat100:27.5,carbs100:0},
-{id:"chat-2026-10-13-apple-pie",date:"2026-10-13",name:"Домашний пирожок с яблочным вареньем",grams:100,kcal100:290,protein100:5,fat100:8,carbs100:49.5},
-{id:"chat-2026-10-13-syrniki",date:"2026-10-13",name:"Сырники, 2 шт. (224 ккал, 12 г белка)",grams:100,kcal100:224,protein100:12,fat100:7.5,carbs100:6.3},
-{id:"chat-2026-10-13-soup",date:"2026-10-13",name:"Домашние щи с мясом, полтарелки (~250 г)",grams:250,kcal100:70,protein100:5.4,fat100:4,carbs100:3},
-{id:"chat-2026-10-13-potato",date:"2026-10-13",name:"Запечённый картофель с яйцом и сыром (~250 г)",grams:250,kcal100:150,protein100:10,fat100:10,carbs100:13},
-{id:"chat-2026-10-13-chocolate",date:"2026-10-13",name:"Шоколад Алёнка, 4 маленькие дольки (~20 г)",grams:20,kcal100:550,protein100:7,fat100:34,carbs100:53},
-{id:"chat-2026-10-13-cottage",date:"2026-10-13",name:"Творог 5%, как обычно",grams:200,kcal100:121,protein100:17,fat100:5,carbs100:2},
-{id:"chat-2026-10-13-pasta",date:"2026-10-13",name:"Макароны с курицей, преимущественно макароны (~200 г)",grams:200,kcal100:165,protein100:7.5,fat100:4,carbs100:24},
-{id:"chat-2026-10-13-potato-extra",date:"2026-10-13",name:"Запечённый картофель с яйцом и сыром, дополнительная порция",grams:100,kcal100:150,protein100:10,fat100:10,carbs100:13}
-];
-const october14Food:FoodEntry[]=[
-{id:"chat-2026-10-14-roti-cheese",date:"2026-10-14",name:"Лепёшка роти с сыром (~100 г, оценка)",grams:100,kcal100:330,protein100:11,fat100:16,carbs100:35},
-{id:"chat-2026-10-14-cottage",date:"2026-10-14",name:"Творог 5%",grams:200,kcal100:121,protein100:17,fat100:5,carbs100:2},
-{id:"chat-2026-10-14-liver-fritters",date:"2026-10-14",name:"Печёночные оладьи КОРОНА-ФУД",grams:300,kcal100:181.7,protein100:14.5,fat100:7.3,carbs100:14.5},
-{id:"chat-2026-10-14-bar",date:"2026-10-14",name:"Батончик, 38 г (по этикетке)",grams:38,kcal100:493.5,protein100:5.2,fat100:26.3,carbs100:59},
-{id:"chat-2026-10-14-mashed-potato",date:"2026-10-14",name:"Картофельное пюре",grams:160,kcal100:110,protein100:2,fat100:5,carbs100:15},
-{id:"chat-2026-10-14-pork-sausages",date:"2026-10-14",name:"Свиные сосиски, запечённые, 2 шт.",grams:50,kcal100:290,protein100:12,fat100:24,carbs100:6},
-{id:"chat-2026-10-14-cottage-evening",date:"2026-10-14",name:"Творог 5%, вторая порция",grams:200,kcal100:121,protein100:17,fat100:5,carbs100:2},
-];
-const october15Food:FoodEntry[]=[
-{id:"chat-2026-10-15-scramble",date:"2026-10-15",name:"Скрембл с небольшим количеством молока",grams:220,kcal100:150,protein100:10,fat100:11,carbs100:2},
-{id:"chat-2026-10-15-carrots",date:"2026-10-15",name:"Морковь по-корейски",grams:150,kcal100:130,protein100:1.3,fat100:9,carbs100:12},
-{id:"chat-2026-10-15-bread",date:"2026-10-15",name:"Белый хлеб, два куска",grams:60,kcal100:260,protein100:8,fat100:3,carbs100:50},
-{id:"chat-2026-10-15-soup",date:"2026-10-15",name:"Суп с фрикадельками, порция",grams:350,kcal100:60,protein100:4,fat100:3,carbs100:4},
-{id:"chat-2026-10-15-rice",date:"2026-10-15",name:"Рис с двумя креветками",grams:320,kcal100:137.5,protein100:5,fat100:2.5,carbs100:26},
-{id:"chat-2026-10-15-buckwheat-stew",date:"2026-10-15",name:"Гречка с говяжьей и куриной тушёнкой",grams:250,kcal100:140,protein100:8,fat100:6.4,carbs100:12.4},
-{id:"chat-2026-10-15-cottage",date:"2026-10-15",name:"Творог 5%, 290 г",grams:290,kcal100:121,protein100:17,fat100:5,carbs100:2},
-{id:"chat-2026-10-15-jam",date:"2026-10-15",name:"Варенье к творогу, 1–2 ч. л. (оценка)",grams:10,kcal100:260,protein100:0.3,fat100:0,carbs100:65}
-];
-const october12Training:Training={id:"chat-2026-10-12-strength-a",date:"2026-10-12",type:"Силовая А — выполнена",minutes:75,notes:"15 мин степпер, 3 круга по 12 повторений: гоблет 17,5 кг; жим лёжа 50 кг; верхний блок 42,5 кг; румынская тяга 2×17,5 кг. Планка 3×1 мин, жук 3×20 на сторону. В конце 15 мин дорожка."};
-const empty={name:"",grams:"",kcal100:"",protein100:"",fat100:"",carbs100:""};
-const tabs:{id:Tab;label:string;icon:any}[]=[{id:"overview",label:"Обзор",icon:BarChart3},{id:"food",label:"Питание",icon:UtensilsCrossed},{id:"weight",label:"Вес",icon:Scale},{id:"training",label:"Тренировки",icon:Dumbbell},{id:"plan",label:"План недели",icon:CalendarDays},{id:"health",label:"Здоровье",icon:HeartPulse}];
-const uid=()=>crypto.randomUUID();
-const n=(x:string)=>Number(x)||0;
-function useStored<T>(key:string,initial:T){const [state,setState]=useState<T>(initial);const [ready,setReady]=useState(false);useEffect(()=>{try{const raw=localStorage.getItem(key);if(raw){const saved=JSON.parse(raw) as T;if(Array.isArray(saved)&&Array.isArray(initial)){const ids=new Set(initial.map((x:any)=>x.id??x.date));setState([...saved.filter((x:any)=>!ids.has(x.id??x.date)),...initial] as T)}else setState(saved)}}catch{}setReady(true)},[key]);useEffect(()=>{if(ready)localStorage.setItem(key,JSON.stringify(state))},[key,state,ready]);return [state,setState] as const}
-export default function Home(){
- const [showTraining,setShowTraining]=useState(false);const [tab,setTab]=useState<Tab>("overview");const [date,setDate]=useState(today());const [entries,setEntries]=useCloudStored<FoodEntry>("fs-food-v1",[...october12Food,...october13Food,...october14Food,...october15Food]);const [weights,setWeights]=useCloudStored<Weight>("fs-weights-v1",[{id:"chat-2026-10-12-weight",date:"2026-10-12",value:104}]);const [trainings,setTrainings]=useCloudStored<Training>("fs-training-v1",[october12Training]);
- const [dayReviews,setDayReviews]=useCloudStored<DayReview>("fs-day-reviews-v1",[{date:"2026-10-12",status:"complete",updatedAt:"2026-10-13T08:00:00+03:00"}]);const [plan,setPlan]=useCloudStored<PlanItem>("fs-plan-2026-10-12-v1",starterPlan);const [newPlanTitle,setNewPlanTitle]=useState("");const [newPlanDate,setNewPlanDate]=useState("2026-10-12");const [foodForm,setFoodForm]=useState(empty);const [editId,setEditId]=useState<string|null>(null);const [showFood,setShowFood]=useState(false);const [weightInput,setWeightInput]=useState("");const [trainingType,setTrainingType]=useState("Силовая");const [trainingMinutes,setTrainingMinutes]=useState("45");const [trainingNotes,setTrainingNotes]=useState("");
- const schedule=useMemo(()=>scheduleFromPlans(plan),[plan]);
- const trainingWeek=useMemo(()=>Array.from({length:7},(_,i)=>trainingDay(dayShift(date,-((new Date(date+"T12:00:00").getDay()+6)%7)+i),trainings,schedule)),[date,trainings,schedule]);
- const selectedTrainingDay=trainingWeek.find(d=>d.date===date)!;
- const daily=useMemo(()=>entries.filter(e=>e.date===date),[entries,date]);const sum=useMemo(()=>total(daily),[daily]);const sortedWeights=useMemo(()=>[...weights].sort((a,b)=>a.date.localeCompare(b.date)),[weights]);const latest=sortedWeights.at(-1)?.value;const targetKcal=2100;const targetProtein=130;
- const reviewed=dayReviews.find(x=>x.date===date);const daysToReview=Array.from({length:14},(_,i)=>dayShift(today(),-i-1)).filter(d=>!dayReviews.some(r=>r.date===d&&r.status==="complete")).slice(0,7);const reviewDay=(d:string,status:DayReview["status"])=>setDayReviews(prev=>[...prev.filter(x=>x.date!==d),{date:d,status,updatedAt:new Date().toISOString()}]);const chatBackfill=(d:string)=>{const message=`FoodSport: восстанови питание за ${d}. Помоги вспомнить и посчитать КБЖУ; отмечай оценки как приблизительные.`;navigator.clipboard?.writeText(message).then(()=>alert("Текст для чата скопирован. Открой ChatGPT и вставь его."),()=>alert(message));};
- const changeDate=(days:number)=>{const d=new Date(date+"T12:00:00");d.setDate(d.getDate()+days);setDate([d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-"))};
- const saveFood=()=>{if(!foodForm.name.trim()||n(foodForm.grams)<=0)return;const item:FoodEntry={id:editId||uid(),date,name:foodForm.name.trim(),grams:n(foodForm.grams),kcal100:n(foodForm.kcal100),protein100:n(foodForm.protein100),fat100:n(foodForm.fat100),carbs100:n(foodForm.carbs100)};if(!validFood(item)){alert("Проверь вес и показатели на 100 г: значения должны быть неотрицательными.");return;}setEntries(prev=>editId?prev.map(x=>x.id===editId?{...item,date:x.date}:x):[...prev,item]);setFoodForm(empty);setEditId(null);setShowFood(false)};
- const editFood=(e:FoodEntry)=>{setFoodForm({name:e.name,grams:String(e.grams),kcal100:String(e.kcal100),protein100:String(e.protein100),fat100:String(e.fat100),carbs100:String(e.carbs100)});setEditId(e.id);setShowFood(true)};
- const addWeight=()=>{if(n(weightInput)<=0)return;setWeights(p=>[...p.filter(w=>w.date!==date),{id:uid(),date,value:n(weightInput)}]);setWeightInput("")};
- const addTraining=()=>{if(n(trainingMinutes)<=0)return;setTrainings(p=>[...p,{id:uid(),date,type:trainingType,minutes:n(trainingMinutes),notes:trainingNotes}]);setTrainingNotes("")};
- const progress=(value:number,target:number)=>Math.min(100,Math.max(0,value/target*100));
- return <div className="journalapp">
- <header className="journalheader"><div className="journalbrand"><Activity size={23}/><strong>FoodSport</strong><span>Дневник</span></div><button className="journalexport" onClick={()=>downloadJSON("foodsport-export.json",buildExport(entries,weights,trainings))}>Экспорт данных</button></header>
- <main className="journalmain"><CloudAccount/>
- <div className="journalheading"><div><h1>Дневник</h1><p>Питание, активность и вес</p></div><div className="datebar"><button aria-label="Предыдущий день" onClick={()=>changeDate(-1)}><ChevronLeft size={18}/></button><input aria-label="Дата" type="date" value={date} onChange={e=>setDate(e.target.value)}/><button aria-label="Следующий день" onClick={()=>changeDate(1)}><ChevronRight size={18}/></button></div></div>
- <div className="journalmetrics"><div><small>Калории</small><strong>{daily.length?round(sum.kcal).toLocaleString("ru-RU"):"—"} <span>ккал</span></strong></div><div><small>Белок</small><strong>{daily.length?round(sum.protein):"—"} <span>г</span></strong></div><div><small>Жиры</small><strong>{daily.length?round(sum.fat):"—"} <span>г</span></strong></div><div><small>Углеводы</small><strong>{daily.length?round(sum.carbs):"—"} <span>г</span></strong></div></div>
- <div className="journalgrid"><div className="journalprimary">
- <section className="journalpanel"><div className="journalpanelhead"><div><h2>Питание</h2><small>{reviewed?.status==="complete"?"День заполнен":daily.length?"Записи за день":"Нет записей"}</small></div></div>
- {daily.length?<div className="mealstable"><div className="mealstablehead"><span>Продукт</span><span>Ккал</span><span>Белок</span><span>Жиры</span><span>Углев.</span></div>{daily.map(e=><div className="mealrow" key={e.id}><div><strong>{e.name}</strong><small>{e.grams} г</small></div><b>{round(macros(e).kcal)}</b><b>{round(macros(e).protein)} г</b><b>{round(macros(e).fat)} г</b><b>{round(macros(e).carbs)} г</b></div>)}<div className="mealtotal"><strong>Итого</strong><b>{round(sum.kcal)}</b><b>{round(sum.protein)} г</b><b>{round(sum.fat)} г</b><b>{round(sum.carbs)} г</b></div></div>:<p className="journalempty">Питание за этот день пока не записано.</p>}
- {reviewed?.score!=null&&<p><strong>Оценка дня: {reviewed.score}/10</strong>{reviewed.comment&&<> — {reviewed.comment}</>}</p>}<div className="journalcheck"><span>{reviewed?.status==="complete"?"✓ Дневник за день проверен":"Питание за день"}</span></div></section>
- <WorkoutPlanner day={selectedTrainingDay} week={trainingWeek} onDateChange={setDate}/>
- <TrainingJournal day={selectedTrainingDay}/>
+import TrainingJournal, { TrainingSummary } from "./TrainingJournal";
 
- <section className="journalpanel"><div className="journalpanelhead"><div><h2>Итоги недели</h2><small>Нажми на день, чтобы открыть его дневник</small></div></div><div className="weeksummary">{trainingWeek.map(activity=>{const d=activity.date;const es=entries.filter(e=>e.date===d);const review=dayReviews.find(x=>x.date===d);const totals=total(es);const future=d>today();return <button key={d} aria-pressed={d===date} className={"weeksummaryrow"+(d===date?" selected":"")} onClick={()=>setDate(d)}><strong>{new Date(d+"T12:00:00").toLocaleDateString("ru-RU",{weekday:"short",day:"numeric",month:"short"})}</strong><span>{es.length?`${round(totals.kcal)} ккал · Б ${round(totals.protein)} · Ж ${round(totals.fat)} · У ${round(totals.carbs)} г`:future?"Предстоящий день":"Питание не записано"}<small>{review?.score!=null?`Оценка ${review.score}/10 · `:future?"":"Оценка не выставлена · "}{review?.status==="complete"?"Дневник заполнен":es.length?"Записи есть · день не закрыт":""}</small></span><TrainingSummary day={activity}/></button>})}</div></section>
- </div><aside className="journalside">
- <section className="journalpanel"><div className="journalpanelhead"><h2>Контроль веса</h2><Scale size={19}/></div><div className="journalweight">{latest?latest.toFixed(1):"—"} <span>кг</span></div><p className="journalsub">Цель 90 кг · измерение раз в неделю</p>{sortedWeights.length>1&&<p className="journaldelta">К прошлому измерению: {(sortedWeights.at(-1)!.value-sortedWeights.at(-2)!.value)>0?"+":""}{(sortedWeights.at(-1)!.value-sortedWeights.at(-2)!.value).toFixed(1)} кг</p>}<div className="journalweightform"><input aria-label="Вес в килограммах" type="number" min="20" max="400" step="0.1" placeholder="Вес, кг" value={weightInput} onChange={e=>setWeightInput(e.target.value)}/><button onClick={addWeight}>Записать</button></div><small className="journalsub">Дата измерения: {date}</small><WeightGraph weights={sortedWeights}/></section>
- <section className="journalpanel"><div className="journalpanelhead"><h2>Незаполненные дни</h2><span className="journalcount">{daysToReview.length}</span></div>{daysToReview.length?daysToReview.map(d=><button className="journalmissing" key={d} onClick={()=>setDate(d)}><span>{new Date(d+"T12:00:00").toLocaleDateString("ru-RU",{day:"numeric",month:"long"})}</span><strong>Открыть →</strong></button>):<p className="journalempty">За последние две недели пропусков нет.</p>}</section>
- </aside></div>
+// TODO(backlog): personal targets belong in Supabase, not in public code.
+const WEIGHT_GOAL_KG = 90;
 
- </main>{false&&showFood&&<div className="overlay" onMouseDown={e=>{if(e.target===e.currentTarget)setShowFood(false)}}><div className="modal"><div className="sectionhead"><h3>{editId?"Изменить продукт":"Добавить продукт"}</h3><button aria-label="Закрыть" onClick={()=>setShowFood(false)}><X size={21}/></button></div><label>Название<input autoFocus placeholder="Например, куриная грудка" value={foodForm.name} onChange={e=>setFoodForm(p=>({...p,name:e.target.value}))}/></label><label>Порция, грамм<input type="number" min="1" value={foodForm.grams} onChange={e=>setFoodForm(p=>({...p,grams:e.target.value}))}/></label><p className="muted">Показатели на 100 г продукта</p><div className="formgrid">{([["kcal100","Ккал"],["protein100","Белки, г"],["fat100","Жиры, г"],["carbs100","Углеводы, г"]] as const).map(([key,label])=><label key={key}>{label}<input type="number" min="0" step="0.1" value={foodForm[key]} onChange={e=>setFoodForm(p=>({...p,[key]:e.target.value}))}/></label>)}</div><div className="preview">В порции: <strong>{round(n(foodForm.kcal100)*n(foodForm.grams)/100)} ккал</strong></div><button className="primary wide" onClick={saveFood}><Check size={18}/> Сохранить</button></div></div>}</div>
+const shift = (value: string, delta: number) => {
+  const d = new Date(value + "T12:00:00");
+  d.setDate(d.getDate() + delta);
+  return [d.getFullYear(), String(d.getMonth() + 1).padStart(2, "0"), String(d.getDate()).padStart(2, "0")].join("-");
+};
+const label = (d: string, opts: Intl.DateTimeFormatOptions) => new Date(d + "T12:00:00").toLocaleDateString("ru-RU", opts);
+const time = (iso: string) => new Date(iso).toLocaleString("ru-RU", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+
+function Shell({ children }: { children: ReactNode }) {
+  return (
+    <div className="journalapp">
+      <header className="journalheader">
+        <div className="journalbrand"><Activity size={23} /><strong>FoodSport</strong><span>Дневник</span></div>
+      </header>
+      <main className="journalmain">{children}</main>
+    </div>
+  );
 }
-function Stat({title,value,unit,percent}:{title:string;value:string;unit:string;percent?:number}){return <div className="stat"><div className="muted">{title}</div><div className="statvalue">{value}</div><small>{unit}</small>{percent!==undefined&&<div className="track"><div style={{width:percent+"%"}}/></div>}</div>}
-function Empty({text}:{text:string}){return <div className="empty"><BookOpen size={27}/><p>{text}</p></div>}
-function WeightGraph({weights}:{weights:Weight[]}){if(!weights.length)return <Empty text="Добавь первое измерение веса"/>;if(weights.length===1)return <div className="weightone">{weights[0].value.toFixed(1)} кг <small>{weights[0].date}</small></div>;const values=weights.map(w=>w.value),min=Math.min(...values)-1,max=Math.max(...values)+1;const points=weights.map((w,i)=>[24+(i/(weights.length-1))*552,150-(w.value-min)/(max-min)*120]);return <div className="graph"><svg viewBox="0 0 600 180" role="img" aria-label="График веса"><line x1="24" y1="150" x2="576" y2="150" stroke="#dbe4e5"/><polyline points={points.map(p=>p.join(",")).join(" ")} fill="none" stroke="#188779" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>{points.map((p,i)=><circle key={i} cx={p[0]} cy={p[1]} r="5" fill="#188779"><title>{weights[i].date}: {weights[i].value} кг</title></circle>)}</svg><div className="graphlabels"><span>{weights[0].date}</span><span>{weights.at(-1)?.date}</span></div></div>}
+
+export default function Home() {
+  const { data, status } = useJournal();
+  const [date, setDate] = useState(today());
+  const food = data?.food ?? [];
+  const trainings = data?.trainings ?? [];
+  const reviews = data?.reviews ?? [];
+  const plans = data?.plans ?? [];
+  const weights = data?.weights ?? [];
+
+  const schedule = useMemo(() => scheduleFromPlans(plans), [plans]);
+  const week = useMemo(() => {
+    const monday = shift(date, -((new Date(date + "T12:00:00").getDay() + 6) % 7));
+    return Array.from({ length: 7 }, (_, i) => trainingDay(shift(monday, i), trainings, schedule));
+  }, [date, trainings, schedule]);
+  const selected = week.find((d) => d.date === date)!;
+  const daily = useMemo(() => food.filter((e) => e.date === date), [food, date]);
+  const sum = total(daily);
+  const review = reviews.find((r) => r.date === date);
+  const sortedWeights = useMemo(() => [...weights].sort((a, b) => a.date.localeCompare(b.date)), [weights]);
+  const latest = sortedWeights.at(-1);
+  const previous = sortedWeights.at(-2);
+  const now = today();
+  const missing = Array.from({ length: 14 }, (_, i) => shift(now, -i - 1))
+    .filter((d) => !reviews.some((r) => r.date === d && r.status === "complete"))
+    .slice(0, 7);
+
+  if (status === "signed-out") return <Shell><Login /></Shell>;
+  if (!data) {
+    return (
+      <Shell>
+        <p className="journalempty">
+          {status === "offline" ? "Не удалось загрузить дневник. Страница попробует снова сама." : "Загружаю дневник…"}
+        </p>
+      </Shell>
+    );
+  }
+
+  return (
+    <Shell>
+      <div className="journalheading">
+        <div><h1>Дневник</h1><p>Питание, активность и вес</p></div>
+        <div className="datebar">
+          <button aria-label="Предыдущий день" onClick={() => setDate(shift(date, -1))}><ChevronLeft size={18} /></button>
+          <span>{label(date, { weekday: "short", day: "numeric", month: "long" })}</span>
+          <button aria-label="Следующий день" onClick={() => setDate(shift(date, 1))}><ChevronRight size={18} /></button>
+          {date !== now && <button className="datetoday" onClick={() => setDate(now)}>Сегодня</button>}
+        </div>
+      </div>
+      {status === "offline" && <p className="syncnote">Нет связи с базой. Показаны данные на {time(data.syncedAt)}.</p>}
+
+      <div className="journalmetrics">
+        {([["Калории", sum.kcal, "ккал"], ["Белок", sum.protein, "г"], ["Жиры", sum.fat, "г"], ["Углеводы", sum.carbs, "г"]] as const).map(([name, value, unit]) => (
+          <div key={name}><small>{name}</small><strong>{daily.length ? round(value).toLocaleString("ru-RU") : "—"} <span>{unit}</span></strong></div>
+        ))}
+      </div>
+
+      <div className="journalgrid">
+        <div className="journalprimary">
+          <section className="journalpanel">
+            <div className="journalpanelhead"><div><h2>Питание</h2><small>{review?.status === "complete" ? "День закрыт" : daily.length ? "День не закрыт" : "Нет записей"}</small></div></div>
+            {daily.length ? (
+              <div className="mealstable">
+                <div className="mealstablehead"><span>Продукт</span><span>Ккал</span><span>Белок</span><span>Жиры</span><span>Углев.</span></div>
+                {daily.map((e) => {
+                  const m = macros(e);
+                  return (
+                    <div className="mealrow" key={e.id}>
+                      <div><strong>{e.name}</strong><small>{e.grams} г</small></div>
+                      <b>{round(m.kcal)}</b><b>{round(m.protein)} г</b><b>{round(m.fat)} г</b><b>{round(m.carbs)} г</b>
+                    </div>
+                  );
+                })}
+                <div className="mealtotal"><strong>Итого</strong><b>{round(sum.kcal)}</b><b>{round(sum.protein)} г</b><b>{round(sum.fat)} г</b><b>{round(sum.carbs)} г</b></div>
+              </div>
+            ) : <p className="journalempty">Питание за этот день не записано.</p>}
+            {review?.score != null && <p className="dayscore"><strong>Оценка дня: {review.score}/10</strong>{review.comment && <> — {review.comment}</>}</p>}
+          </section>
+
+          <WorkoutPlanner day={selected} week={week} onDateChange={setDate} />
+          <TrainingJournal day={selected} />
+
+          <section className="journalpanel">
+            <div className="journalpanelhead"><div><h2>Итоги недели</h2><small>Нажми на день, чтобы открыть его</small></div></div>
+            <div className="weeksummary">
+              {week.map((activity) => {
+                const d = activity.date;
+                const entries = food.filter((e) => e.date === d);
+                const r = reviews.find((x) => x.date === d);
+                const t = total(entries);
+                const future = d > now;
+                const state = [
+                  r?.score != null ? `Оценка ${r.score}/10` : future ? "" : "Без оценки",
+                  r?.status === "complete" ? "день закрыт" : entries.length ? "день не закрыт" : "",
+                ].filter(Boolean).join(" · ");
+                return (
+                  <button key={d} aria-pressed={d === date} className={"weeksummaryrow" + (d === date ? " selected" : "")} onClick={() => setDate(d)}>
+                    <strong>{label(d, { weekday: "short", day: "numeric", month: "short" })}</strong>
+                    <span>
+                      {entries.length ? `${round(t.kcal)} ккал · Б ${round(t.protein)} · Ж ${round(t.fat)} · У ${round(t.carbs)} г` : future ? "Впереди" : "Питание не записано"}
+                      <small>{state}</small>
+                    </span>
+                    <TrainingSummary day={activity} />
+                  </button>
+                );
+              })}
+            </div>
+          </section>
+        </div>
+
+        <aside className="journalside">
+          <section className="journalpanel">
+            <div className="journalpanelhead"><h2>Вес</h2><Scale size={19} /></div>
+            <div className="journalweight">{latest ? latest.value.toFixed(1) : "—"} <span>кг</span></div>
+            <p className="journalsub">Цель {WEIGHT_GOAL_KG} кг · измерение раз в неделю</p>
+            {latest && previous && (
+              <p className="journaldelta">К прошлому измерению: {latest.value - previous.value > 0 ? "+" : ""}{(latest.value - previous.value).toFixed(1)} кг</p>
+            )}
+            <WeightGraph weights={sortedWeights} />
+          </section>
+          <section className="journalpanel">
+            <div className="journalpanelhead"><h2>Незакрытые дни</h2><span className="journalcount">{missing.length}</span></div>
+            {missing.length ? missing.map((d) => (
+              <button className="journalmissing" key={d} onClick={() => setDate(d)}>
+                <span>{label(d, { day: "numeric", month: "long" })}</span><strong>Открыть →</strong>
+              </button>
+            )) : <p className="journalempty">За последние две недели все дни закрыты.</p>}
+          </section>
+        </aside>
+      </div>
+    </Shell>
+  );
+}
+
+function WeightGraph({ weights }: { weights: Weight[] }) {
+  if (!weights.length) return <div className="empty"><BookOpen size={27} /><p>Измерений пока нет</p></div>;
+  if (weights.length === 1) return <div className="weightone">{weights[0].value.toFixed(1)} кг <small>{weights[0].date}</small></div>;
+  const values = weights.map((w) => w.value);
+  const min = Math.min(...values) - 1, max = Math.max(...values) + 1;
+  const points = weights.map((w, i) => [24 + (i / (weights.length - 1)) * 552, 150 - ((w.value - min) / (max - min)) * 120]);
+  return (
+    <div className="graph">
+      <svg viewBox="0 0 600 180" role="img" aria-label="График веса">
+        <line x1="24" y1="150" x2="576" y2="150" stroke="#dbe4e5" />
+        <polyline points={points.map((p) => p.join(",")).join(" ")} fill="none" stroke="#188779" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+        {points.map((p, i) => <circle key={i} cx={p[0]} cy={p[1]} r="5" fill="#188779"><title>{weights[i].date}: {weights[i].value} кг</title></circle>)}
+      </svg>
+      <div className="graphlabels"><span>{weights[0].date}</span><span>{weights.at(-1)?.date}</span></div>
+    </div>
+  );
+}
