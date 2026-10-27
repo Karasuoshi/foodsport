@@ -72,6 +72,9 @@ button:disabled { opacity: .5; cursor: default; }
 .completedtraining + .completedtraining { margin-top: 16px; }
 
 /* Week summary */
+.accountpanel { display: flex; flex-direction: column; gap: 6px; }
+.accountpanel small { color: #8a999e; font-size: 12px; }
+.accountpanel strong { font-size: 13px; color: #254440; word-break: break-all; margin-bottom: 6px; }
 .quotaline { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
 .quotaline span { font-size: 12px; font-weight: 700; color: #637d79; background: #f3f6f6; border: 1px solid #e7eeee; border-radius: 999px; padding: 5px 10px; }
 .quotaline span.done { color: #167b6d; background: #eff8f4; border-color: #d9e9e3; }

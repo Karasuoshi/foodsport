@@ -40,6 +40,9 @@ function store(data: Session & { expires_in?: number }): Session {
 /** Owner of the last saved session, available offline for showing cached data. */
 export const storedUserId = () => stored()?.user?.id ?? null;
 
+/** Email of the signed-in account, shown so the owner can tell which account the site uses. */
+export const storedEmail = () => stored()?.user?.email ?? null;
+
 let refreshing: Promise<Session | null> | null = null;
 
 async function refresh(s: Session): Promise<Session | null> {

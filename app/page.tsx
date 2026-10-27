@@ -2,11 +2,13 @@
 // Read-only dashboard. Every number comes from Supabase via useJournal;
 // agents write the journal, the site only displays it (see AGENTS.md).
 import { useMemo, useState, type ReactNode } from "react";
-import { Activity, BookOpen, ChevronLeft, ChevronRight, Scale } from "lucide-react";
+import { Activity, BookOpen, ChevronLeft, ChevronRight, Download, Scale } from "lucide-react";
 import { macros, round, today, total } from "../lib/food";
 import { scheduleFromPlans, suggestion, trainingDay, weekProgress } from "../lib/training";
 import type { Settings, Weight } from "../lib/cloud";
 import useJournal from "./useJournal";
+import { storedEmail } from "../lib/supabase";
+import { exportFile, saveExport } from "../lib/export";
 import Login from "./Login";
 import TrainingDay, { QuotaLine, TrainingSummary } from "./TrainingDay";
 
@@ -146,6 +148,11 @@ export default function Home() {
               <p className="journaldelta">К прошлому измерению: {latest.value - previous.value > 0 ? "+" : ""}{(latest.value - previous.value).toFixed(1)} кг</p>
             )}
             <WeightGraph weights={sortedWeights} />
+          </section>
+          <section className="journalpanel accountpanel">
+            <small>Вы вошли как</small>
+            <strong>{storedEmail() ?? "—"}</strong>
+            <button className="workoutopen" onClick={() => void saveExport(exportFile(data, storedEmail()))}><Download size={16} /> Выгрузить данные</button>
           </section>
         </aside>
       </div>
