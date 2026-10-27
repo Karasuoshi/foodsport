@@ -7,7 +7,7 @@ import {trainingDay,TrainingDay} from "../lib/training";
 import {ScheduleConfig} from "../lib/workouts";
 
 const date="2040-06-04";
-const schedule:ScheduleConfig={effectiveFrom:date,weekdays:[null,null,null,null,null,null,null],overrides:[{date,workoutId:"b"}]};
+const schedule:ScheduleConfig={overrides:[{date,workoutId:"b"}]};
 const renderViews=(day:TrainingDay)=>[
  renderToStaticMarkup(React.createElement(TrainingDayPanel,{day})),
  renderToStaticMarkup(React.createElement(TrainingSummary,{day})),
@@ -25,7 +25,7 @@ test("day panel and weekly cell render the same completed activity",()=>{
 test("both views keep an unrecorded workout explicitly planned",()=>{
  for(const html of renderViews(trainingDay(date,[],schedule))){
   assert.match(html,/Силовая Б/);
-  assert.match(html,/По плану/);
+  assert.match(html,/Запланировано/);
   assert.doesNotMatch(html,/Выполнено/);
  }
 });

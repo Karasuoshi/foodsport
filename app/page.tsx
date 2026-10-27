@@ -4,11 +4,11 @@
 import { useMemo, useState, type ReactNode } from "react";
 import { Activity, BookOpen, ChevronLeft, ChevronRight, Scale } from "lucide-react";
 import { macros, round, today, total } from "../lib/food";
-import { scheduleFromPlans, trainingDay } from "../lib/training";
+import { scheduleFromPlans, suggestion, trainingDay, weekProgress } from "../lib/training";
 import type { Settings, Weight } from "../lib/cloud";
 import useJournal from "./useJournal";
 import Login from "./Login";
-import TrainingDay, { TrainingSummary } from "./TrainingDay";
+import TrainingDay, { QuotaLine, TrainingSummary } from "./TrainingDay";
 
 const shift = (value: string, delta: number) => {
   const d = new Date(value + "T12:00:00");
@@ -41,10 +41,12 @@ export default function Home() {
   const goals: Settings = data?.settings ?? {};
 
   const schedule = useMemo(() => scheduleFromPlans(plans), [plans]);
+  const now = today();
   const week = useMemo(() => {
     const monday = shift(date, -((new Date(date + "T12:00:00").getDay() + 6) % 7));
-    return Array.from({ length: 7 }, (_, i) => trainingDay(shift(monday, i), trainings, schedule));
-  }, [date, trainings, schedule]);
+    return Array.from({ length: 7 }, (_, i) => trainingDay(shift(monday, i), trainings, schedule, now));
+  }, [date, trainings, schedule, now]);
+  const progress = useMemo(() => weekProgress(date, trainings), [date, trainings]);
   const selected = week.find((d) => d.date === date)!;
   const daily = useMemo(() => food.filter((e) => e.date === date), [food, date]);
   const sum = total(daily);
@@ -52,11 +54,9 @@ export default function Home() {
   const sortedWeights = useMemo(() => [...weights].sort((a, b) => a.date.localeCompare(b.date)), [weights]);
   const latest = sortedWeights.at(-1);
   const previous = sortedWeights.at(-2);
-  const now = today();
   // Past days only: a half-logged today would drag the average down.
   const recorded = week.filter((d) => d.date < now).map((d) => total(food.filter((e) => e.date === d.date))).filter((t) => t.kcal > 0);
   const avg = (k: "kcal" | "protein") => recorded.reduce((n, t) => n + t[k], 0) / recorded.length;
-  const sessions = week.reduce((n, d) => n + d.sessions.length, 0);
 
   if (status === "signed-out") return <Shell><Login /></Shell>;
   if (!data) {
@@ -110,10 +110,11 @@ export default function Home() {
             {review?.score != null && <p className="dayscore"><strong>Оценка дня: {review.score}/10</strong>{review.comment && <> — {review.comment}</>}</p>}
           </section>
 
-          <TrainingDay key={date} day={selected} />
+          <TrainingDay key={date} day={selected} suggestion={date >= now ? suggestion(date, trainings) : undefined} />
 
           <section className="journalpanel">
-            <div className="journalpanelhead"><div><h2>Неделя</h2><small>{recorded.length ? `В среднем ${num(avg("kcal"))} ккал · белок ${num(avg("protein"))} г · дней с записями: ${recorded.length}` : "Записей за неделю пока нет"}{` · тренировок: ${sessions}`}</small></div></div>
+            <div className="journalpanelhead"><div><h2>Неделя</h2><small>{recorded.length ? `В среднем ${num(avg("kcal"))} ккал · белок ${num(avg("protein"))} г · дней с записями: ${recorded.length}` : "Записей за неделю пока нет"}</small></div></div>
+            <QuotaLine progress={progress} />
             <div className="weeksummary">
               {week.map((activity) => {
                 const d = activity.date;

@@ -4,7 +4,7 @@ import {PlanItem,Training,scheduleFromPlans,trainingDay,trainingDaySummary} from
 import {ScheduleConfig} from "../lib/workouts";
 
 const date="2040-06-04";
-const base:ScheduleConfig={effectiveFrom:"2040-06-01",weekdays:[null,null,null,null,null,null,null],overrides:[{date,workoutId:"b"}]};
+const base:ScheduleConfig={overrides:[{date,workoutId:"b"}]};
 const workout:Training={id:"session-1",date,type:"Бег",minutes:42,notes:""};
 const plan=(day:string,id:string):PlanItem=>({id:`workout-plan:test-owner:${day}:${id}`,date:day,title:"",done:false});
 
@@ -12,7 +12,7 @@ test("a scheduled workout stays planned until a completed session exists",()=>{
  const day=trainingDay(date,[],base);
  assert.equal(day.title,"Силовая Б");
  assert.equal(day.status,"planned");
- assert.equal(day.statusText,"По плану");
+ assert.equal(day.statusText,"Запланировано");
  assert.deepEqual(day.sessions,[]);
 });
 
@@ -35,7 +35,7 @@ test("cloud rescheduling updates both dates without changing the recurring sched
  const schedule=scheduleFromPlans([plan(date,"rest"),plan(next,"cycle")],base);
  assert.equal(trainingDay(date,[],schedule).status,"rest");
  assert.equal(trainingDay(next,[],schedule).planned?.id,"cycle");
- assert.equal(trainingDay("2040-06-12",[],schedule).status,"rest");
+ assert.equal(trainingDay("2040-06-12",[],schedule).status,"free");
 });
 
 test("a correction, move or deletion re-derives every view from current sessions",()=>{

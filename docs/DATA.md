@@ -11,7 +11,7 @@
 | `weights` | `id` text | `date, value (>0)` | Вес в кг. Одно измерение на дату. |
 | `trainings` | `id` text | `date, type, minutes, notes, created_at` | **Выполненная** тренировка. |
 | `day_reviews` | `(user_id, date)` | `status ('complete'\|'no-data'), score 1–10 null, comment null` | Оценка дня. `status` сайт не показывает; при оценке ставить `'complete'`. |
-| `plan_items` | `id` text | `date, title, done` | Перенос тренировки на дату (формат ниже). Строки с id `mon`…`sun` — старые примеры, сайт их не показывает. |
+| `plan_items` | `id` text | `date, title, done` | Разовый план тренировки или отдыха на дату (формат ниже). Строки с id `mon`…`sun` — старые примеры, сайт их не показывает. |
 | `settings` | `user_id` | `kcal_target, protein_min, protein_max, weight_goal` | Цели владельца. На сайте показываются как ориентиры. Менять только с его согласия. |
 
 ## Кто владелец
@@ -57,7 +57,7 @@ on conflict (user_id,date) do update set status=excluded.status, score=excluded.
 returning *;
 ```
 
-**Перенос тренировки:** ID имеет вид `workout-plan:<OWNER>:<дата>:<workoutId|rest>`, где `workoutId` берётся из `lib/workouts.ts` (`a, b, swim, cycle, cardio, run`). На одну дату — одна такая строка: сначала удали прежнюю (`delete … where id like 'workout-plan:<OWNER>:<дата>:%'`), потом вставь новую. `title` — короткая подпись, `done=false`. Такая строка задаёт только план и не создаёт выполненную тренировку.
+**План тренировки на дату:** ID имеет вид `workout-plan:<OWNER>:<дата>:<workoutId|rest>`, где `workoutId` берётся из `lib/workouts.ts` (`a, b, swim, cycle, cardio, run`). На одну дату — одна такая строка: сначала удали прежнюю (`delete … where id like 'workout-plan:<OWNER>:<дата>:%'`), потом вставь новую. `title` — короткая подпись, `done=false`. Такая строка задаёт только план и не создаёт выполненную тренировку.
 
 **Цели:** `insert into settings (user_id,kcal_target,protein_min,protein_max,weight_goal) values (…) on conflict (user_id) do update set …, updated_at=now()`.
 
