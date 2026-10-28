@@ -69,7 +69,7 @@ returning *;
 
 ## Резервная копия
 - Формат — `foodsport-export-v1`, тот же, что даёт кнопка «Выгрузить данные» на сайте: `{format, exportedAt, account, food, weights, trainings, reviews, plans, settings}`, поля в camelCase.
-- Агент делает копию после изменений в дневнике (не чаще раза в день) и по просьбе владельца: читает все шесть таблиц и сохраняет JSON на компьютер владельца в `D:\Claude\FoodSport\backups\foodsport-<дата>.json`. В репозиторий копии не попадают.
+- Агент делает копию после изменений в дневнике (не чаще раза в день) и по просьбе владельца: выполняет `scripts/export.sql` и сохраняет значение `export` на компьютер владельца в `D:\Claude\FoodSport\backups\foodsport-<дата>.json`. В репозиторий копии не попадают.
 - Восстановление: `python3 scripts/import_sql.py <файл.json> <OWNER_UUID> [цель_веса]` печатает одну транзакцию с `on conflict do nothing`; выполнить её через `execute_sql`.
 
 ## Безопасность
