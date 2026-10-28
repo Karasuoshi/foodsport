@@ -7,9 +7,7 @@ import { macros, round, today, total } from "../lib/food";
 import { scheduleFromPlans, suggestion, trainingDay, weekProgress } from "../lib/training";
 import type { Settings, Weight } from "../lib/cloud";
 import useJournal from "./useJournal";
-import { storedEmail } from "../lib/supabase";
 import { exportFile, saveExport } from "../lib/export";
-import Login from "./Login";
 import TrainingDay, { QuotaLine, TrainingSummary } from "./TrainingDay";
 
 const shift = (value: string, delta: number) => {
@@ -60,7 +58,6 @@ export default function Home() {
   const recorded = week.filter((d) => d.date < now).map((d) => total(food.filter((e) => e.date === d.date))).filter((t) => t.kcal > 0);
   const avg = (k: "kcal" | "protein") => recorded.reduce((n, t) => n + t[k], 0) / recorded.length;
 
-  if (status === "signed-out") return <Shell><Login /></Shell>;
   if (!data) {
     return (
       <Shell>
@@ -150,9 +147,7 @@ export default function Home() {
             <WeightGraph weights={sortedWeights} />
           </section>
           <section className="journalpanel accountpanel">
-            <small>Вы вошли как</small>
-            <strong>{storedEmail() ?? "—"}</strong>
-            <button className="workoutopen" onClick={() => void saveExport(exportFile(data, storedEmail()))}><Download size={16} /> Выгрузить данные</button>
+            <button className="workoutopen" onClick={() => void saveExport(exportFile(data))}><Download size={16} /> Выгрузить данные</button>
           </section>
         </aside>
       </div>

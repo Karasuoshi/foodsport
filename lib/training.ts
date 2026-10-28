@@ -24,12 +24,12 @@ const shift=(value:string,delta:number)=>{
 export const mondayOf=(date:string)=>shift(date,-((new Date(date+"T12:00:00").getDay()+6)%7));
 export const weekDates=(date:string)=>{const m=mondayOf(date);return Array.from({length:7},(_,i)=>shift(m,i))};
 
-/** One-off plans from plan_items: `workout-plan:<owner>:<date>:<workoutId|rest>`. */
+/** One-off plans from plan_items: `workout-plan:<date>:<workoutId|rest>`. */
 export function scheduleFromPlans(plans:PlanItem[],base:ScheduleConfig=emptySchedule):ScheduleConfig {
  const overrides=plans.flatMap(p=>{
   const parts=p.id.split(":");
-  if(parts.length!==4||parts[0]!=="workout-plan"||!parts[1]||parts[2]!==p.date)return [];
-  const id=parts[3];
+  if(parts.length!==3||parts[0]!=="workout-plan"||parts[1]!==p.date)return [];
+  const id=parts[2];
   return id==="rest"||workouts.some(w=>w.id===id)?[{date:p.date,workoutId:id==="rest"?null:id}]:[];
  });
  return {overrides:[...overrides,...base.overrides]};

@@ -4,10 +4,10 @@ import type { Snapshot } from "./cloud";
 
 export type ExportFile = { name: string; json: string };
 
-export function exportFile(snap: Snapshot, email: string | null, now = new Date()): ExportFile {
+export function exportFile(snap: Snapshot, now = new Date()): ExportFile {
   const day = now.toISOString().slice(0, 10);
   const { syncedAt, ...tables } = snap;
-  const body = { format: "foodsport-export-v1", exportedAt: now.toISOString(), syncedAt, account: email, ...tables };
+  const body = { format: "foodsport-export-v1", exportedAt: now.toISOString(), syncedAt, ...tables };
   return { name: `foodsport-${day}.json`, json: JSON.stringify(body, null, 1) };
 }
 

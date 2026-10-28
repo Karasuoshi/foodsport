@@ -1,8 +1,8 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { cacheKey, fromDb, toSnapshot, TABLES } from "../lib/cloud";
+import { fromDb, toSnapshot, TABLES } from "../lib/cloud";
 
-test("rows keep known fields only and drop ownership columns", () => {
+test("rows keep known fields only and drop unknown columns", () => {
   const row = { user_id: "owner", date: "2026-01-01", status: "complete", updated_at: "t", score: 8, comment: null, extra: 1 };
   assert.deepEqual(fromDb(row, "day_reviews"), { date: "2026-01-01", status: "complete", updatedAt: "t", score: 8, comment: null });
   assert.equal("user_id" in fromDb({ id: "x", user_id: "owner", date: "2026-01-01" }, "food_entries"), false);
@@ -30,8 +30,4 @@ test("settings become a single typed row or null", () => {
   assert.equal(toSnapshot(raw, "now").settings, null);
   const row = { user_id: "owner", kcal_target: 2000, protein_min: 100, protein_max: 120, weight_goal: "80.5", updated_at: "t" };
   assert.deepEqual(toSnapshot({ ...(raw as object), settings: [row] } as never, "now").settings, { kcalTarget: 2000, proteinMin: 100, proteinMax: 120, weightGoal: 80.5 });
-});
-
-test("cache is account-specific", () => {
-  assert.notEqual(cacheKey("a"), cacheKey("b"));
 });

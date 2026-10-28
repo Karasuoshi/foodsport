@@ -6,7 +6,7 @@ import {ScheduleConfig} from "../lib/workouts";
 const date="2040-06-04";
 const base:ScheduleConfig={overrides:[{date,workoutId:"b"}]};
 const workout:Training={id:"session-1",date,type:"Бег",minutes:42,notes:""};
-const plan=(day:string,id:string):PlanItem=>({id:`workout-plan:test-owner:${day}:${id}`,date:day,title:"",done:false});
+const plan=(day:string,id:string):PlanItem=>({id:`workout-plan:${day}:${id}`,date:day,title:"",done:false});
 
 test("a scheduled workout stays planned until a completed session exists",()=>{
  const day=trainingDay(date,[],base);

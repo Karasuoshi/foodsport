@@ -20,7 +20,7 @@ const FIELDS: Record<Table, string[]> = {
 const NUMERIC = new Set(["grams", "kcal100", "protein100", "fat100", "carbs100", "value", "minutes", "score", "kcalTarget", "proteinMin", "proteinMax", "weightGoal"]);
 const column = (field: string) => field.replace(/[A-Z]/g, (c) => "_" + c.toLowerCase());
 
-/** Copies only known fields; user_id and unknown columns never reach the UI. */
+/** Copies only known fields; unknown columns never reach the UI. */
 export function fromDb(row: Record<string, unknown>, table: Table): Record<string, unknown> {
   const out: Record<string, unknown> = {};
   for (const f of FIELDS[table]) {
@@ -61,5 +61,5 @@ export function toSnapshot(raw: Record<Table, Record<string, unknown>[]>, synced
   };
 }
 
-/** Last good snapshot per account, shown instantly and when the network fails. */
-export const cacheKey = (user: string) => `fs-cloud-v4:${user}`;
+/** Last good snapshot, shown instantly and when the network fails. */
+export const CACHE_KEY = "fs-cloud-v5";
