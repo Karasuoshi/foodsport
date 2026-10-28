@@ -1,9 +1,9 @@
 // Supabase access for the read-only dashboard.
 // The publishable key is public by design; row-level security limits every
 // request to the signed-in owner's rows. The site never writes journal data.
-export const SUPABASE_URL = "https://kzyykhjjpalrhprcttow.supabase.co";
-const KEY = "sb_publishable_UnnZRK2ZDcaA-au1e8GSCA_o0gOb3M6";
-const STORAGE = "fs-supabase-session-v1";
+export const SUPABASE_URL = "https://fmfvrefupuyfbtktxxtl.supabase.co";
+const KEY = "sb_publishable_Na5vG7GtN_aBjGRnr1Q1vQ_ocIE2B1f";
+const STORAGE = "fs-supabase-session-v2";
 export const AUTH_EVENT = "foodsport-auth-changed";
 
 export type Session = { access_token: string; refresh_token: string; expires_at?: number; user: { id: string; email?: string } };

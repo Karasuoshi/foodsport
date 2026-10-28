@@ -62,4 +62,4 @@ export function toSnapshot(raw: Record<Table, Record<string, unknown>[]>, synced
 }
 
 /** Last good snapshot per account, shown instantly and when the network fails. */
-export const cacheKey = (user: string) => `fs-cloud-v3:${user}`;
+export const cacheKey = (user: string) => `fs-cloud-v4:${user}`;

@@ -1,9 +1,9 @@
 # Данные: Supabase
 
-Проект `kzyykhjjpalrhprcttow` (eu-central-1, free tier). Все таблицы лежат в схеме `public`, у каждой строки есть `user_id → auth.users`. RLS пускает пользователя только к его собственным строкам.
+Проект `fmfvrefupuyfbtktxxtl` в организации Karasuoshi (eu-west-1, free tier). Агент работает через коннектор Supabase в Claude (`execute_sql`, `apply_migration`). Все таблицы лежат в схеме `public`, у каждой строки есть `user_id → auth.users`. RLS пускает пользователя только к его собственным строкам.
 
 ## Таблицы
-У всех таблиц есть `user_id uuid → auth.users` и `updated_at timestamptz default now()`. Полная схема — миграции в `docs/db/`, новая миграция кладётся туда же с тем же номером версии.
+У всех таблиц есть `user_id uuid → auth.users` и `updated_at timestamptz default now()`. Полная схема — `docs/db/`. Новая миграция применяется через `apply_migration` и кладётся туда же отдельным файлом.
 
 | Таблица | Ключ | Поля | Смысл |
 |---|---|---|---|
@@ -15,6 +15,7 @@
 | `settings` | `user_id` | `kcal_target, protein_min, protein_max, weight_goal` | Цели владельца. На сайте показываются как ориентиры. Менять только с его согласия. |
 
 ## Кто владелец
+Аккаунт для входа на сайт владелец создаёт сам: Supabase Dashboard → Authentication → Users → Add user → Create new user (почта, пароль, Auto Confirm). Агент аккаунты и пароли не создаёт.
 1. Спроси у владельца почту его аккаунта на сайте, если её нет в приватном контексте.
 2. Получи UUID: `select id from auth.users where email = '<почта>'`.
 3. Используй этот UUID во всех запросах. Почту и UUID в репозиторий не записывай.
@@ -65,6 +66,11 @@ returning *;
 
 ## После записи
 Прочитай строку обратно (`returning *` или `select`) и проверь, что она ровно одна и значения совпадают. Сайт подтянет её в течение 15 секунд.
+
+## Резервная копия
+- Формат — `foodsport-export-v1`, тот же, что даёт кнопка «Выгрузить данные» на сайте: `{format, exportedAt, account, food, weights, trainings, reviews, plans, settings}`, поля в camelCase.
+- Агент делает копию после изменений в дневнике (не чаще раза в день) и по просьбе владельца: читает все шесть таблиц и сохраняет JSON на компьютер владельца в `D:\Claude\FoodSport\backups\foodsport-<дата>.json`. В репозиторий копии не попадают.
+- Восстановление: `python3 scripts/import_sql.py <файл.json> <OWNER_UUID> [цель_веса]` печатает одну транзакцию с `on conflict do nothing`; выполнить её через `execute_sql`.
 
 ## Безопасность
 - Не отключать RLS, не выводить в чат и не коммитить service-role ключи. Publishable-ключ в `lib/supabase.ts` публичный по задумке.
