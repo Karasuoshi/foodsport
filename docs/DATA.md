@@ -55,7 +55,9 @@ returning *;
 
 ## Резервная копия
 - Формат — `foodsport-export-v1`, тот же, что даёт кнопка «Выгрузить данные» на сайте: `{format, exportedAt, food, weights, trainings, reviews, plans, settings}`, поля в camelCase.
-- Агент делает копию после изменений в дневнике (не чаще раза в день) и по просьбе владельца: выполняет `scripts/export.sql` и сохраняет значение `export` на компьютер владельца в `D:\FoodSport\backups\foodsport-<дата>.json`. В репозиторий копии не попадают.
+- Workflow `Backup FoodSport journal` каждую ночь (00:17 МСК) снимает копию через публичное API (`scripts/backup.mjs`) и хранит её артефактом 90 дней. Вручную: `gh workflow run backup.yml -R Karasuoshi/foodsport`.
+- На компьютер владельца копию кладёт агент: `gh run download <id> -R Karasuoshi/foodsport -n foodsport-backup -D <папка>` → `D:\FoodSport\backups\foodsport-<дата>.json`. Делать после сессии записей и по просьбе «бэкап». В репозиторий копии не попадают.
+- `scripts/export.sql` даёт тот же JSON прямо из базы — запасной путь, если GitHub недоступен.
 - Восстановление: `python3 scripts/import_sql.py <файл.json> [цель_веса]` печатает одну транзакцию с `on conflict do nothing`; выполнить её через `execute_sql`.
 
 ## Безопасность

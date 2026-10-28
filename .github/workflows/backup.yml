@@ -1,0 +1,23 @@
+name: Backup FoodSport journal
+# Daily snapshot of the journal as a workflow artifact (kept 90 days).
+# The agent downloads the latest one to D:\FoodSport\backups on the owner's computer.
+on:
+  schedule:
+    - cron: '17 21 * * *'   # 00:17 Moscow
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  backup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: node scripts/backup.mjs backup
+      - uses: actions/upload-artifact@v4
+        with:
+          name: foodsport-backup
+          path: backup/*.json
+          retention-days: 90
